@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.22 -->
+  <!-- pecoyomi v0.23 -->
   <style>
     :root{
       --bg:#f7f4ef;
@@ -345,23 +345,23 @@
     .subbtn{min-height:42px;font-size:13px;color:var(--sub)}
 
 
-    /* ボタン共通：ぷにゅっとした押下フィードバック */
+    /* ボタン共通：iPhoneでも見える、少し保持する押下フィードバック */
     .theme,
     .controlbtn:not(.ghost-nav),
     .subbtn,
     .action{
       transform-origin:center center;
       transition:
-        transform 65ms cubic-bezier(.2,.8,.3,1),
+        transform 80ms cubic-bezier(.2,.8,.3,1),
         background 70ms ease-out,
         box-shadow 70ms ease-out;
       will-change:transform;
     }
-    .theme:active,
-    .controlbtn:not(.ghost-nav):active,
-    .subbtn:active,
-    .action:active{
-      transform:scale(.975);
+    .theme.is-pressed,
+    .controlbtn:not(.ghost-nav).is-pressed,
+    .subbtn.is-pressed,
+    .action.is-pressed{
+      transform:scale(.965);
     }
 
     dialog{
@@ -1434,6 +1434,27 @@
       const r=dlg.getBoundingClientRect();
       if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) dlg.close();
     });
+  });
+
+  // iOSでは :active が短すぎて見えにくいことがあるため、
+  // pointerdownで押し込み、指を離したあとも約70msだけ保持して戻す。
+  document.querySelectorAll('.theme, .controlbtn:not(.ghost-nav), .subbtn, .action').forEach(btn=>{
+    let pressTimer = null;
+    const pressIn = ()=>{
+      if(pressTimer) window.clearTimeout(pressTimer);
+      btn.classList.add('is-pressed');
+    };
+    const pressOut = ()=>{
+      if(pressTimer) window.clearTimeout(pressTimer);
+      pressTimer = window.setTimeout(()=>{
+        btn.classList.remove('is-pressed');
+      },70);
+    };
+
+    btn.addEventListener('pointerdown', pressIn);
+    btn.addEventListener('pointerup', pressOut);
+    btn.addEventListener('pointercancel', pressOut);
+    btn.addEventListener('pointerleave', pressOut);
   });
 
   render();
