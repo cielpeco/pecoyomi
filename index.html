@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.18 -->
+  <!-- pecoyomi v0.19 -->
   <style>
     :root{
       --bg:#f7f4ef;
@@ -56,12 +56,29 @@
     }
     
     .theme{
-      background:var(--panel);
+      background:rgba(255,255,255,.20);
+      -webkit-backdrop-filter:blur(10px) saturate(112%);
+      backdrop-filter:blur(10px) saturate(112%);
+      border:0;
       border-radius:var(--radius);
       padding:12px 14px;
-      box-shadow:var(--shadow);
+      box-shadow:
+        0 4px 16px rgba(70,60,50,.055),
+        inset 0 1px 0 rgba(255,255,255,.46);
       min-height:62px;
       display:flex;align-items:center;justify-content:center;gap:10px;
+      -webkit-tap-highlight-color:transparent;
+      transition:
+        transform 70ms ease-out,
+        background 70ms ease-out,
+        box-shadow 70ms ease-out;
+    }
+    .theme:active{
+      transform:scale(.985);
+      background:rgba(255,255,255,.28);
+      box-shadow:
+        0 2px 9px rgba(70,60,50,.045),
+        inset 0 1px 0 rgba(255,255,255,.40);
     }
     .theme-main{min-width:0;width:100%;text-align:center}
     .eyebrow{font-size:11px;color:var(--sub);margin-bottom:3px}
@@ -271,16 +288,45 @@
     }
     .controlbtn,.subbtn{
       min-height:42px;
+      border:0;
       border-radius:13px;
-      background:var(--panel);
-      box-shadow:var(--shadow);
+      background:rgba(255,255,255,.20);
+      -webkit-backdrop-filter:blur(10px) saturate(112%);
+      backdrop-filter:blur(10px) saturate(112%);
+      box-shadow:
+        0 4px 14px rgba(70,60,50,.05),
+        inset 0 1px 0 rgba(255,255,255,.44);
       font-weight:700;
+      -webkit-tap-highlight-color:transparent;
+      transition:
+        transform 70ms ease-out,
+        background 70ms ease-out,
+        box-shadow 70ms ease-out;
     }
-    .controlbtn.primary{background:var(--accent);color:#fff}
+    .controlbtn.primary{
+      background:rgba(110,98,88,.72);
+      color:#fff;
+      box-shadow:
+        0 4px 14px rgba(65,55,48,.10),
+        inset 0 1px 0 rgba(255,255,255,.18);
+    }
+    .controlbtn:not(.ghost-nav):active,
+    .subbtn:active{
+      transform:scale(.985);
+      background:rgba(255,255,255,.29);
+      box-shadow:
+        0 2px 8px rgba(70,60,50,.04),
+        inset 0 1px 0 rgba(255,255,255,.38);
+    }
+    .controlbtn.primary:active{
+      background:rgba(110,98,88,.82);
+    }
     .ghost-nav{
       opacity:0;
       box-shadow:none;
       background:transparent;
+      -webkit-backdrop-filter:none;
+      backdrop-filter:none;
     }
     .subcontrols{
       display:grid;
@@ -456,11 +502,48 @@
     }
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
     .action{
-      flex:1 1 140px;min-height:44px;border-radius:12px;
-      background:var(--accent);color:#fff;font-weight:800;
+      flex:1 1 140px;
+      min-height:44px;
+      border:0;
+      border-radius:12px;
+      background:rgba(110,98,88,.72);
+      color:#fff;
+      font-weight:800;
+      -webkit-backdrop-filter:blur(10px) saturate(112%);
+      backdrop-filter:blur(10px) saturate(112%);
+      box-shadow:
+        0 4px 14px rgba(65,55,48,.09),
+        inset 0 1px 0 rgba(255,255,255,.18);
+      -webkit-tap-highlight-color:transparent;
+      transition:
+        transform 70ms ease-out,
+        background 70ms ease-out,
+        box-shadow 70ms ease-out;
     }
-    .action.secondary{background:var(--accent-soft);color:var(--ink)}
-    .action.danger{background:#f2dfdf;color:var(--danger)}
+    .action.secondary{
+      background:rgba(255,255,255,.22);
+      color:var(--ink);
+      box-shadow:
+        0 4px 14px rgba(70,60,50,.05),
+        inset 0 1px 0 rgba(255,255,255,.44);
+    }
+    .action.danger{
+      background:rgba(242,223,223,.58);
+      color:var(--danger);
+      box-shadow:
+        0 4px 14px rgba(110,55,55,.045),
+        inset 0 1px 0 rgba(255,255,255,.36);
+    }
+    .action:active{
+      transform:scale(.985);
+      background:rgba(110,98,88,.82);
+    }
+    .action.secondary:active{
+      background:rgba(255,255,255,.31);
+    }
+    .action.danger:active{
+      background:rgba(242,223,223,.72);
+    }
     .report{
       margin-top:12px;padding:11px 12px;border-radius:12px;
       background:var(--accent-soft);font-size:13px;line-height:1.6;
