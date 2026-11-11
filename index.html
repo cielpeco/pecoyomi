@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.37 -->
+  <!-- pecoyomi v0.38 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -546,7 +546,7 @@
       -webkit-backdrop-filter:blur(16px) saturate(112%);
       backdrop-filter:blur(16px) saturate(112%);
       opacity:0;
-      transition:opacity 90ms ease-out;
+      transition:opacity 120ms ease-out;
     }
     #readingDialog.is-visible::backdrop{
       opacity:1;
@@ -559,7 +559,7 @@
       height:auto;
       margin:0 auto;
       opacity:0;
-      transition:opacity 90ms ease-out;
+      transition:opacity 120ms ease-out;
       will-change:opacity;
     }
     #readingDialog.is-visible .modal{
@@ -675,7 +675,7 @@
       -webkit-backdrop-filter:blur(16px) saturate(112%);
       backdrop-filter:blur(16px) saturate(112%);
       opacity:0;
-      transition:opacity 90ms ease-out;
+      transition:opacity 120ms ease-out;
     }
     #editDialog.is-visible::backdrop{opacity:1}
     #editDialog .modal{
@@ -686,7 +686,7 @@
       margin:0 auto;
       background:transparent;
       opacity:0;
-      transition:opacity 90ms ease-out;
+      transition:opacity 120ms ease-out;
       will-change:opacity;
     }
     #editDialog.is-visible .modal{opacity:1}
@@ -765,6 +765,11 @@
       border-radius:26px;
       outline:none;
       box-shadow:0 18px 60px rgba(32,26,24,.22);
+      opacity:0;
+      transition:opacity 120ms ease-out;
+    }
+    #backupDialog.is-visible{
+      opacity:1;
     }
     #backupDialog:focus,
     #backupDialog:focus-visible,
@@ -778,6 +783,11 @@
       background:rgba(28,24,28,.42);
       -webkit-backdrop-filter:blur(3px);
       backdrop-filter:blur(3px);
+      opacity:0;
+      transition:opacity 120ms ease-out;
+    }
+    #backupDialog.is-visible::backdrop{
+      opacity:1;
     }
     #backupDialog .modal-head{
       justify-content:center;
@@ -1336,6 +1346,25 @@
     render();
   }
 
+  const DIALOG_FADE_MS = 120;
+
+  function fadeInDialog(dlg){
+    dlg.classList.remove('is-visible');
+    dlg.showModal();
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>dlg.classList.add('is-visible'));
+    });
+  }
+
+  function fadeOutDialog(dlg, afterClose){
+    if(!dlg.open) return;
+    dlg.classList.remove('is-visible');
+    window.setTimeout(()=>{
+      if(dlg.open) dlg.close();
+      if(typeof afterClose === 'function') afterClose();
+    }, DIALOG_FADE_MS);
+  }
+
   function openReading(){
     const data=currentMonthData();
     $('readingEyebrow').textContent=`${state.viewYear}年${state.viewMonth}月`;
@@ -1359,22 +1388,14 @@
       `;
     }
     const dlg=$('readingDialog');
-    dlg.classList.remove('is-visible');
     document.body.classList.add('reading-open');
-    dlg.showModal();
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>dlg.classList.add('is-visible'));
-    });
+    fadeInDialog(dlg);
   }
 
   function closeReading(){
     const dlg=$('readingDialog');
-    if(!dlg.open) return;
-    dlg.classList.remove('is-visible');
     document.body.classList.remove('reading-open');
-    window.setTimeout(()=>{
-      if(dlg.open) dlg.close();
-    },110);
+    fadeOutDialog(dlg);
   }
 
   function openEditor(){
@@ -1385,20 +1406,19 @@
     state.pending=null;
     renderDelete(data);
     const dlg=$('editDialog');
-    dlg.classList.remove('is-visible');
-    dlg.showModal();
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>dlg.classList.add('is-visible'));
-    });
+    fadeInDialog(dlg);
   }
 
   function closeEditor(){
-    const dlg=$('editDialog');
-    if(!dlg.open) return;
-    dlg.classList.remove('is-visible');
-    window.setTimeout(()=>{
-      if(dlg.open) dlg.close();
-    },110);
+    fadeOutDialog($('editDialog'));
+  }
+
+  function openBackup(){
+    fadeInDialog($('backupDialog'));
+  }
+
+  function closeBackup(){
+    fadeOutDialog($('backupDialog'));
   }
 
   function renderDelete(data){
@@ -1472,7 +1492,7 @@
       const obj=JSON.parse(await file.text());
       if(obj.app!=='pecoyomi' || !obj.months) throw new Error('pecoyomiのバックアップではないみたい。');
       if(!confirm('現在の登録データを、選んだバックアップで置き換える？')) return;
-      state.months=obj.months;saveMonths();$('backupDialog').close();render();
+      state.months=obj.months;saveMonths();closeBackup();render();
       alert('復元しました。');
     }catch(err){ alert(err.message || '復元できませんでした。'); }
     e.target.value='';
@@ -1536,7 +1556,10 @@
     }, 45);
   }
 
-  monthSwipeRegion.addEventListener('pointerdown',(e)=>{
+  const appSwipeRegion = document.querySelector('.app');
+  let suppressNextMainClick = false;
+
+  appSwipeRegion.addEventListener('pointerdown',(e)=>{
     if(swipeAnimating) return;
     swipeStartX = e.clientX;
     swipeStartY = e.clientY;
@@ -1546,7 +1569,7 @@
     monthSwipeRegion.classList.add('is-dragging');
   });
 
-  monthSwipeRegion.addEventListener('pointermove',(e)=>{
+  appSwipeRegion.addEventListener('pointermove',(e)=>{
     if(!swipeActive || swipeAnimating) return;
     const dx = e.clientX - swipeStartX;
     const dy = e.clientY - swipeStartY;
@@ -1574,6 +1597,10 @@
     monthSwipeRegion.classList.remove('is-dragging');
 
     if(swipeHorizontal && Math.abs(swipeDx) >= 56){
+      // 横フリック成立後のボタンclickを1回だけ抑制
+      suppressNextMainClick = true;
+      window.setTimeout(()=>{ suppressNextMainClick = false; }, 260);
+
       // 左フリック = 翌月、右フリック = 前月
       finishMonthSwipe(swipeDx < 0 ? 1 : -1);
     }else{
@@ -1587,9 +1614,16 @@
     }
   }
 
-  monthSwipeRegion.addEventListener('pointerup', endSwipe);
-  monthSwipeRegion.addEventListener('pointercancel', endSwipe);
-  monthSwipeRegion.addEventListener('lostpointercapture', endSwipe);
+  appSwipeRegion.addEventListener('pointerup', endSwipe);
+  appSwipeRegion.addEventListener('pointercancel', endSwipe);
+  appSwipeRegion.addEventListener('lostpointercapture', endSwipe);
+
+  appSwipeRegion.addEventListener('click',(e)=>{
+    if(!suppressNextMainClick) return;
+    e.preventDefault();
+    e.stopPropagation();
+    suppressNextMainClick = false;
+  }, true);
 
   $('prevDay').addEventListener('click',()=>changeDay(-1));
   $('nextDay').addEventListener('click',()=>changeDay(1));
@@ -1606,7 +1640,7 @@
     }
     openEditor();
   });
-  $('backupBtn').addEventListener('click',()=>$('backupDialog').showModal());
+  $('backupBtn').addEventListener('click',openBackup);
   $('exportBtn').addEventListener('click',exportBackup);
 
   document.querySelectorAll('[data-close]').forEach(btn=>{
@@ -1672,7 +1706,7 @@
           suppressEditMonthClick = true;
           btn.classList.remove('is-secret-filling');
           filling = false;
-          $('backupDialog').showModal();
+          openBackup();
         },700);
       },500);
     });
@@ -1692,11 +1726,14 @@
     btn.addEventListener('pointerleave',cancelLongPress);
   })();
 
-  [$('backupDialog')].forEach(dlg=>{
-    dlg.addEventListener('click',(e)=>{
-      const r=dlg.getBoundingClientRect();
-      if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) dlg.close();
-    });
+  $('backupDialog').addEventListener('click',(e)=>{
+    const dlg=$('backupDialog');
+    const r=dlg.getBoundingClientRect();
+    if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) closeBackup();
+  });
+  $('backupDialog').addEventListener('cancel',(e)=>{
+    e.preventDefault();
+    closeBackup();
   });
 
   // 月テーマは特殊ボタンとして独立管理。
