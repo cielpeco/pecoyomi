@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.21 -->
+  <!-- pecoyomi v0.22 -->
   <style>
     :root{
       --bg:#f7f4ef;
@@ -76,7 +76,6 @@
         box-shadow 70ms ease-out;
     }
     .theme:active{
-      transform:scale(.985);
       background:rgba(255,255,255,.28);
       box-shadow:
         0 2px 9px rgba(70,60,50,.045),
@@ -320,7 +319,6 @@
     }
     .controlbtn:not(.ghost-nav):active,
     .subbtn:active{
-      transform:scale(.985);
       background:rgba(255,255,255,.29);
       box-shadow:
         0 2px 8px rgba(70,60,50,.04),
@@ -345,6 +343,26 @@
       flex:0 0 auto;
     }
     .subbtn{min-height:42px;font-size:13px;color:var(--sub)}
+
+
+    /* ボタン共通：ぷにゅっとした押下フィードバック */
+    .theme,
+    .controlbtn:not(.ghost-nav),
+    .subbtn,
+    .action{
+      transform-origin:center center;
+      transition:
+        transform 65ms cubic-bezier(.2,.8,.3,1),
+        background 70ms ease-out,
+        box-shadow 70ms ease-out;
+      will-change:transform;
+    }
+    .theme:active,
+    .controlbtn:not(.ghost-nav):active,
+    .subbtn:active,
+    .action:active{
+      transform:scale(.975);
+    }
 
     dialog{
       width:min(94vw,520px);
@@ -655,7 +673,6 @@
         inset 0 -1px 0 rgba(110,55,55,.045);
     }
     .action:active{
-      transform:scale(.985);
       background:rgba(110,98,88,.82);
     }
     .action.secondary:active{
