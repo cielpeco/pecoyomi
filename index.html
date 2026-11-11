@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.29 -->
+  <!-- pecoyomi v0.30 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -419,12 +419,12 @@
       opacity:1;
       transform:translate(-50%,-50%) scale(1);
       transition:
-        transform 1000ms linear,
+        transform 700ms linear,
         opacity 80ms ease-out;
     }
     #editMonth.is-secret-filling .edit-month-label{
       color:#fff;
-      transition:color 1000ms linear;
+      transition:color 700ms linear;
     }
 
 
@@ -470,16 +470,16 @@
     /* 月テーマ全文：枠を持たない、ぼかし主体のガラス表現 */
     #readingDialog{
       width:100vw;
-      height:100dvh;
+      height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       max-width:none;
       max-height:none;
-      margin:0;
+      margin:
+        env(safe-area-inset-top)
+        0
+        env(safe-area-inset-bottom);
       border:0;
       border-radius:0;
-      padding:
-        max(18px, calc(env(safe-area-inset-top) + 6px))
-        14px
-        max(12px, env(safe-area-inset-bottom));
+      padding:18px 14px 12px;
       background:transparent;
       box-shadow:none;
       color:var(--ink);
@@ -700,6 +700,36 @@
       margin-top:44px;
     }
 
+    /* バックアップ：メンテナンス用の別モードとして暗転ポップアップ */
+    #backupDialog{
+      background:rgba(255,255,255,.88);
+      -webkit-backdrop-filter:blur(18px) saturate(108%);
+      backdrop-filter:blur(18px) saturate(108%);
+      border:0;
+      border-radius:26px;
+      box-shadow:0 18px 60px rgba(32,26,24,.22);
+    }
+    #backupDialog::backdrop{
+      background:rgba(28,24,28,.42);
+      -webkit-backdrop-filter:blur(3px);
+      backdrop-filter:blur(3px);
+    }
+    #backupDialog .modal-head{
+      justify-content:center;
+      background:transparent;
+      border-bottom:0;
+      padding:18px 16px 8px;
+    }
+    #backupDialog .modal-head h2{
+      width:100%;
+      text-align:center;
+      font-size:17px;
+      margin:0;
+    }
+    #backupDialog .modal-body{
+      padding:12px 18px 20px;
+    }
+
     .modal{
       display:flex;flex-direction:column;max-height:min(84dvh,760px)
     }
@@ -876,7 +906,6 @@
     <div class="modal">
       <div class="modal-head">
         <h2>バックアップ</h2>
-        <button class="close" data-close="backupDialog" aria-label="閉じる">×</button>
       </div>
       <div class="modal-body">
         <p class="prose">登録済みのマンスリーを1つのJSONファイルに書き出せるよ。復元するときは、そのJSONファイルを選択。</p>
@@ -1534,7 +1563,7 @@
   });
 
   // 「月を追加 / 編集」の裏メニュー：
-  // 1秒ホールドで進捗開始 → 中央から1秒かけて塗り切る → バックアップを開く。
+  // 0.5秒ホールドで進捗開始 → 中央から0.7秒かけて塗り切る → バックアップを開く。
   (() => {
     const btn = $('editMonth');
     let holdTimer = null;
@@ -1573,12 +1602,12 @@
           btn.classList.remove('is-secret-filling');
           filling = false;
           $('backupDialog').showModal();
-        },1000);
-      },1000);
+        },700);
+      },500);
     });
 
     const cancelLongPress = ()=>{
-      // 1秒を超えて一度でも裏メニュー判定に入った場合は、
+      // 0.5秒を超えて一度でも裏メニュー判定に入った場合は、
       // 指を途中で離しても通常の編集クリックへ流さない。
       if(filling || secretOpened){
         suppressEditMonthClick = true;
