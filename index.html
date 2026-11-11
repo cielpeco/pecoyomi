@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.12 -->
+  <!-- pecoyomi v0.13 -->
   <style>
     :root{
       --bg:#f7f4ef;
@@ -161,20 +161,21 @@
     }
     .month-number-bg{
       position:absolute;
-      left:0;
+      left:calc(100% / 7);
       bottom:100%;
-      transform:translateY(18px);
-      transform-origin:left bottom;
+      transform:translate(-50%, 18px);
+      transform-origin:center bottom;
       font-size:148px;
       line-height:.78;
       font-weight:800;
       letter-spacing:-.08em;
       color:rgba(255,255,255,.20);
-      text-shadow:0 2px 18px rgba(70,60,55,.12);
+      text-shadow:none;
       pointer-events:none;
       user-select:none;
       z-index:0;
       white-space:nowrap;
+      text-align:center;
     }
     .calendar-header,
     .weekdays,
@@ -231,7 +232,7 @@
       .swipe-region{gap:7px}
       .day{min-height:42px;gap:2px}
       .daily{min-height:105px;padding:6px 4px 8px}
-      .month-number-bg{font-size:124px;left:0;bottom:100%;transform:translateY(16px)}
+      .month-number-bg{font-size:124px;left:calc(100% / 7);bottom:100%;transform:translate(-50%, 16px)}
       .daily-card{margin-top:14px}
     }
     .day.blank{visibility:hidden}
