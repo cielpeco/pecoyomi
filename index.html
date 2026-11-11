@@ -8,10 +8,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.24 -->
+  <!-- pecoyomi v0.25 -->
   <style>
     :root{
-      --bg:#f7f4ef;
+      --bg:#F5EFF2;
       --panel:#ffffff;
       --ink:#242424;
       --sub:#756f69;
@@ -23,8 +23,44 @@
       --shadow:0 8px 28px rgba(0,0,0,.06);
     }
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
-    body{overflow:hidden}
+    html,body{
+      margin:0;
+      height:100%;
+      color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
+    }
+    html{
+      background:#F5EFF2;
+    }
+    body{
+      overflow:hidden;
+      background:
+        radial-gradient(
+          ellipse 72% 58% at 6% 7%,
+          rgba(229,212,216,.88) 0%,
+          rgba(229,212,216,.52) 38%,
+          rgba(229,212,216,0) 74%
+        ),
+        radial-gradient(
+          ellipse 78% 62% at 116% 34%,
+          rgba(232,226,236,.92) 0%,
+          rgba(232,226,236,.56) 40%,
+          rgba(232,226,236,0) 76%
+        ),
+        radial-gradient(
+          ellipse 82% 66% at -12% 108%,
+          rgba(217,229,229,.92) 0%,
+          rgba(217,229,229,.56) 42%,
+          rgba(217,229,229,0) 78%
+        ),
+        linear-gradient(
+          160deg,
+          #F5EFF2 0%,
+          #E8E4DC 100%
+        );
+      background-repeat:no-repeat;
+      background-attachment:fixed;
+    }
     button,textarea,input{font:inherit}
     button{border:0;background:none;color:inherit}
     .app{
