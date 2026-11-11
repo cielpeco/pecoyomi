@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-  <meta name="theme-color" content="#FFFAFC" />
+  <meta name="theme-color" content="#FFF8FB" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.26 -->
+  <!-- pecoyomi v0.27 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -37,28 +37,28 @@
       /* 3つの静止したにじみ。青緑はフッターへ広く、上部は明るく。 */
       background:
         radial-gradient(
-          ellipse 87% 57% at 0% 9%,
-          rgba(245,193,212,.69) 0%,
-          rgba(245,205,222,.43) 38%,
-          rgba(245,205,222,0) 79%
+          ellipse 90% 58% at 0% 8%,
+          rgba(248,209,224,.67) 0%,
+          rgba(248,222,233,.41) 39%,
+          rgba(248,222,233,0) 80%
         ),
         radial-gradient(
-          ellipse 94% 68% at 120% 33%,
-          rgba(217,202,243,.78) 0%,
-          rgba(228,215,247,.51) 41%,
-          rgba(228,215,247,0) 80%
+          ellipse 96% 69% at 120% 32%,
+          rgba(227,216,246,.76) 0%,
+          rgba(237,229,249,.49) 42%,
+          rgba(237,229,249,0) 81%
         ),
         radial-gradient(
-          ellipse 128% 69% at 10% 113%,
+          ellipse 138% 76% at 12% 114%,
           rgba(169,222,216,.75) 0%,
-          rgba(193,236,229,.50) 43%,
-          rgba(193,236,229,0) 83%
+          rgba(193,236,229,.52) 44%,
+          rgba(193,236,229,0) 84%
         ),
         linear-gradient(
           160deg,
-          #FFFAFC 0%,
-          #F9F6FF 49%,
-          #FCFAF3 100%
+          #FFF8FB 0%,
+          #FBF8FF 49%,
+          #FDFBF5 100%
         );
       background-repeat:no-repeat;
       background-attachment:fixed;
@@ -98,7 +98,7 @@
       -webkit-backdrop-filter:blur(8px) saturate(112%);
       backdrop-filter:blur(8px) saturate(112%);
       border:0;
-      border-radius:var(--radius);
+      border-radius:999px;
       padding:12px 14px;
       box-shadow:
         0 4px 16px rgba(70,60,50,.055),
@@ -330,7 +330,7 @@
     .controlbtn,.subbtn{
       min-height:42px;
       border:0;
-      border-radius:13px;
+      border-radius:999px;
       background:rgba(255,255,255,.20);
       -webkit-backdrop-filter:blur(10px) saturate(112%);
       backdrop-filter:blur(10px) saturate(112%);
@@ -686,7 +686,7 @@
       flex:1 1 140px;
       min-height:44px;
       border:0;
-      border-radius:12px;
+      border-radius:999px;
       background:rgba(110,98,88,.72);
       color:#fff;
       font-weight:800;
@@ -731,7 +731,7 @@
       background:rgba(242,223,223,.72);
     }
     .report{
-      margin-top:12px;padding:11px 12px;border-radius:12px;
+      margin-top:12px;padding:11px 12px;border-radius:999px;
       background:var(--accent-soft);font-size:13px;line-height:1.6;
     }
     .report.bad{background:#f4e1e1;color:#7c3434}
