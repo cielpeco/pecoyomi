@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.33 -->
+  <!-- pecoyomi v0.34 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -16,8 +16,8 @@
       --ink:#242424;
       --sub:#756f69;
       --line:#ded8d1;
-      --accent:#6e6258;
-      --accent-soft:#ebe5df;
+      --accent:#51516F;
+      --accent-soft:#ECEAF3;
       --danger:#a24c4c;
       --radius:18px;
       --shadow:0 8px 28px rgba(0,0,0,.06);
@@ -360,13 +360,13 @@
         box-shadow 70ms ease-out;
     }
     .controlbtn.primary{
-      background:rgba(110,98,88,.72);
+      background:rgba(81,81,111,.76);
       color:#fff;
       box-shadow:
-        0 4px 14px rgba(65,55,48,.10),
-        0 1px 2px rgba(55,45,40,.16),
+        0 4px 14px rgba(55,55,82,.12),
+        0 1px 2px rgba(48,48,72,.16),
         inset 0 1px 0 rgba(255,255,255,.36),
-        inset 0 -1px 0 rgba(50,42,38,.10);
+        inset 0 -1px 0 rgba(45,45,68,.11);
     }
     .controlbtn:not(.ghost-nav):active,
     .subbtn:active{
@@ -378,7 +378,7 @@
         inset 0 -1px 0 rgba(70,60,50,.04);
     }
     .controlbtn.primary:active{
-      background:rgba(110,98,88,.82);
+      background:rgba(81,81,111,.86);
     }
     .ghost-nav{
       opacity:0;
@@ -395,7 +395,7 @@
     }
     .subbtn{min-height:42px;font-size:13px;color:var(--sub)}
 
-    /* 月を追加 / 編集：長押しで裏メニューへ。1秒後から中央塗りを3秒表示 */
+    /* 月を追加 / 編集：長押しで裏メニューへ。0.5秒後から中央塗りを0.7秒表示 */
     #editMonth{
       position:relative;
       overflow:hidden;
@@ -412,7 +412,7 @@
       width:120%;
       aspect-ratio:1 / 1;
       border-radius:50%;
-      background:rgba(110,98,88,.76);
+      background:rgba(81,81,111,.80);
       opacity:0;
       transform:translate(-50%,-50%) scale(0);
       transform-origin:center center;
@@ -602,7 +602,7 @@
       width:100%;
       height:1px;
       margin-top:7px;
-      background:rgba(110,98,88,.22);
+      background:rgba(81,81,111,.18);
     }
     #readingDialog .section .lead{
       font-size:19px;
@@ -793,16 +793,16 @@
       min-height:44px;
       border:0;
       border-radius:999px;
-      background:rgba(110,98,88,.72);
+      background:rgba(81,81,111,.76);
       color:#fff;
       font-weight:800;
       -webkit-backdrop-filter:blur(10px) saturate(112%);
       backdrop-filter:blur(10px) saturate(112%);
       box-shadow:
-        0 4px 14px rgba(65,55,48,.09),
-        0 1px 2px rgba(55,45,40,.15),
+        0 4px 14px rgba(55,55,82,.11),
+        0 1px 2px rgba(48,48,72,.15),
         inset 0 1px 0 rgba(255,255,255,.34),
-        inset 0 -1px 0 rgba(50,42,38,.09);
+        inset 0 -1px 0 rgba(45,45,68,.10);
       -webkit-tap-highlight-color:transparent;
       transition:
         transform 70ms ease-out,
@@ -828,7 +828,7 @@
         inset 0 -1px 0 rgba(110,55,55,.045);
     }
     .action:active{
-      background:rgba(110,98,88,.82);
+      background:rgba(81,81,111,.86);
     }
     .action.secondary:active{
       background:rgba(255,255,255,.31);
