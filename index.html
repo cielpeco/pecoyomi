@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.35 -->
+  <!-- pecoyomi v0.36 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -249,24 +249,25 @@
     }
     .month-number-bg{
       position:absolute;
+      /* 決め打ち位置：内容量に引っ張られず、常に同じ場所へ */
       left:calc(100% / 7);
-      bottom:100%;
-      transform:translate(-50%, 18px);
-      transform-origin:center bottom;
+      top:-6px;
+      transform:translateX(-50%);
+      transform-origin:center top;
       width:1.42em;
       display:flex;
-      align-items:flex-end;
+      align-items:flex-start;
       justify-content:center;
-      font-size:148px;
+      font-size:222px;
       line-height:.78;
       font-weight:800;
       font-variant-numeric:tabular-nums;
-      letter-spacing:-.06em;
-      color:rgba(255,255,255,.28);
+      letter-spacing:-.065em;
+      color:rgba(255,255,255,.30);
       text-shadow:none;
       pointer-events:none;
       user-select:none;
-      z-index:0;
+      z-index:1;
       white-space:nowrap;
       text-align:center;
       opacity:1;
@@ -328,7 +329,7 @@
       .swipe-region{gap:7px}
       .day{min-height:42px;gap:2px}
       .daily{min-height:105px;padding:6px 4px 8px}
-      .month-number-bg{font-size:124px;left:calc(100% / 7);bottom:100%;transform:translate(-50%, 16px);width:1.42em}
+      .month-number-bg{font-size:186px;left:calc(100% / 7);top:-2px;transform:translateX(-50%);width:1.42em}
       .daily-card{margin-top:14px}
     }
     .day.blank{visibility:hidden}
