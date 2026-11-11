@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.23 -->
+  <!-- pecoyomi v0.24 -->
   <style>
     :root{
       --bg:#f7f4ef;
@@ -345,8 +345,20 @@
     .subbtn{min-height:42px;font-size:13px;color:var(--sub)}
 
 
-    /* ボタン共通：iPhoneでも見える、少し保持する押下フィードバック */
-    .theme,
+    /* 月テーマ：特殊ボタン枠。今後、通常ボタンと別演出に調整できるよう独立 */
+    .theme{
+      transform-origin:center center;
+      transition:
+        transform 80ms cubic-bezier(.2,.8,.3,1),
+        background 70ms ease-out,
+        box-shadow 70ms ease-out;
+      will-change:transform;
+    }
+    .theme.is-theme-pressed{
+      transform:scale(.965);
+    }
+
+    /* 通常ボタン共通：システムUI用の押下フィードバック */
     .controlbtn:not(.ghost-nav),
     .subbtn,
     .action{
@@ -357,7 +369,6 @@
         box-shadow 70ms ease-out;
       will-change:transform;
     }
-    .theme.is-pressed,
     .controlbtn:not(.ghost-nav).is-pressed,
     .subbtn.is-pressed,
     .action.is-pressed{
@@ -1436,25 +1447,59 @@
     });
   });
 
-  // iOSでは :active が短すぎて見えにくいことがあるため、
-  // pointerdownで押し込み、指を離したあとも約70msだけ保持して戻す。
-  document.querySelectorAll('.theme, .controlbtn:not(.ghost-nav), .subbtn, .action').forEach(btn=>{
-    let pressTimer = null;
+  // 月テーマは特殊ボタンとして独立管理。
+  // 通常ボタンとは別に演出調整できるよう、専用クラスを使う。
+  (() => {
+    const btn = $('themeButton');
+    let timer = null;
     const pressIn = ()=>{
-      if(pressTimer) window.clearTimeout(pressTimer);
-      btn.classList.add('is-pressed');
+      if(timer) window.clearTimeout(timer);
+      btn.classList.add('is-theme-pressed');
     };
     const pressOut = ()=>{
-      if(pressTimer) window.clearTimeout(pressTimer);
-      pressTimer = window.setTimeout(()=>{
-        btn.classList.remove('is-pressed');
+      if(timer) window.clearTimeout(timer);
+      timer = window.setTimeout(()=>{
+        btn.classList.remove('is-theme-pressed');
       },70);
     };
-
     btn.addEventListener('pointerdown', pressIn);
     btn.addEventListener('pointerup', pressOut);
     btn.addEventListener('pointercancel', pressOut);
     btn.addEventListener('pointerleave', pressOut);
+  })();
+
+  // 通常ボタン共通。
+  // イベント委譲にして、renderDelete() で後から生成される
+  // 「この月を削除」も自動的に同じ押下演出へ含める。
+  const COMMON_BUTTON_SELECTOR = '.controlbtn:not(.ghost-nav), .subbtn, .action';
+  const commonPressTimers = new WeakMap();
+
+  const commonPressIn = (btn)=>{
+    const oldTimer = commonPressTimers.get(btn);
+    if(oldTimer) window.clearTimeout(oldTimer);
+    btn.classList.add('is-pressed');
+  };
+
+  const commonPressOut = (btn)=>{
+    const oldTimer = commonPressTimers.get(btn);
+    if(oldTimer) window.clearTimeout(oldTimer);
+    const timer = window.setTimeout(()=>{
+      btn.classList.remove('is-pressed');
+      commonPressTimers.delete(btn);
+    },70);
+    commonPressTimers.set(btn,timer);
+  };
+
+  document.addEventListener('pointerdown',(e)=>{
+    const btn = e.target.closest?.(COMMON_BUTTON_SELECTOR);
+    if(btn) commonPressIn(btn);
+  });
+
+  ['pointerup','pointercancel','pointerleave'].forEach(type=>{
+    document.addEventListener(type,(e)=>{
+      const btn = e.target.closest?.(COMMON_BUTTON_SELECTOR);
+      if(btn) commonPressOut(btn);
+    }, true);
   });
 
   render();
