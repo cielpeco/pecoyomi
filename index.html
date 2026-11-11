@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.28 -->
+  <!-- pecoyomi v0.29 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -21,21 +21,7 @@
       --danger:#a24c4c;
       --radius:18px;
       --shadow:0 8px 28px rgba(0,0,0,.06);
-    }
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{
-      margin:0;
-      height:100%;
-      color:var(--ink);
-      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
-    }
-    html{
-      background:#FFFAFC;
-    }
-    body{
-      overflow:hidden;
-      /* 3つの静止したにじみ。青緑はフッターへ広く、上部は明るく。 */
-      background:
+      --app-background:
         radial-gradient(
           ellipse 90% 58% at 0% 8%,
           rgba(248,209,224,.67) 0%,
@@ -60,22 +46,37 @@
           #FBF8FF 49%,
           #FDFBF5 100%
         );
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{
+      margin:0;
+      width:100%;
+      height:100%;
+      min-height:100dvh;
+      color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
+      background:var(--app-background);
       background-repeat:no-repeat;
+      background-size:100vw 100dvh;
       background-attachment:fixed;
+    }
+    body{
+      overflow:hidden;
     }
     button,textarea,input{font:inherit}
     button{border:0;background:none;color:inherit}
     .app{
-      height:100dvh;
-      padding:
-        max(18px, calc(env(safe-area-inset-top) + 6px))
-        14px
-        max(12px, env(safe-area-inset-bottom));
+      /* 背景だけ全面化し、UIは従来のsafe-area内に戻す */
+      height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      padding:18px 14px 12px;
       display:flex;
       flex-direction:column;
       gap:10px;
       max-width:520px;
-      margin:0 auto;
+      margin:
+        env(safe-area-inset-top)
+        auto
+        env(safe-area-inset-bottom);
     }
     .swipe-region{
       flex:1 1 auto;
@@ -418,12 +419,12 @@
       opacity:1;
       transform:translate(-50%,-50%) scale(1);
       transition:
-        transform 3000ms linear,
+        transform 1000ms linear,
         opacity 80ms ease-out;
     }
     #editMonth.is-secret-filling .edit-month-label{
       color:#fff;
-      transition:color 3000ms linear;
+      transition:color 1000ms linear;
     }
 
 
@@ -1533,7 +1534,7 @@
   });
 
   // 「月を追加 / 編集」の裏メニュー：
-  // 1秒ホールドで進捗開始 → 中央から3秒かけて塗り切る → バックアップを開く。
+  // 1秒ホールドで進捗開始 → 中央から1秒かけて塗り切る → バックアップを開く。
   (() => {
     const btn = $('editMonth');
     let holdTimer = null;
@@ -1572,7 +1573,7 @@
           btn.classList.remove('is-secret-filling');
           filling = false;
           $('backupDialog').showModal();
-        },3000);
+        },1000);
       },1000);
     });
 
