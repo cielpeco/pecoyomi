@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.14 -->
+  <!-- pecoyomi v0.15 -->
   <style>
     :root{
       --bg:#f7f4ef;
@@ -301,15 +301,21 @@
 
     /* 月テーマ全文：枠を持たない、ぼかし主体のガラス表現 */
     #readingDialog{
-      width:min(92vw,520px);
-      max-height:min(86dvh,760px);
+      width:100vw;
+      height:100dvh;
+      max-width:none;
+      max-height:none;
+      margin:0;
       border:0;
       border-radius:0;
-      padding:0;
+      padding:
+        max(18px, calc(env(safe-area-inset-top) + 6px))
+        14px
+        max(12px, env(safe-area-inset-bottom));
       background:transparent;
       box-shadow:none;
       color:var(--ink);
-      overflow:visible;
+      overflow:hidden;
     }
     #readingDialog::backdrop{
       background:rgba(247,244,239,.18);
@@ -318,17 +324,36 @@
     }
     #readingDialog .modal{
       background:transparent;
-      max-height:min(86dvh,760px);
+      max-height:100%;
+      height:100%;
     }
     #readingDialog .modal-head{
+      position:relative;
+      top:auto;
       background:transparent;
       border-bottom:0;
-      padding:10px 4px 12px;
+      padding:12px 14px;
+      min-height:62px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
     }
-    #readingDialog .modal-head h2{
-      font-size:15px;
+    #readingDialog .reading-head-copy{
+      min-width:0;
+      text-align:center;
+      flex:1 1 auto;
+    }
+    #readingDialog .reading-eyebrow{
+      font-size:11px;
+      color:var(--sub);
+      margin-bottom:3px;
+    }
+    #readingDialog .reading-title{
+      font-size:16px;
       font-weight:700;
-      letter-spacing:.04em;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     #readingDialog .close{
       width:44px;
@@ -336,15 +361,18 @@
       padding:0;
       display:grid;
       place-items:center;
-      border-radius:50%;
-      color:var(--ink);
-      background:rgba(255,255,255,.16);
-      -webkit-backdrop-filter:blur(6px);
-      backdrop-filter:blur(6px);
+      border-radius:0;
+      color:var(--sub);
+      background:transparent;
+      -webkit-backdrop-filter:none;
+      backdrop-filter:none;
+      flex:0 0 44px;
     }
     #readingDialog .modal-body{
-      padding:8px 4px 24px;
+      padding:8px 14px 24px;
       overflow:auto;
+      flex:1 1 auto;
+      min-height:0;
       -webkit-overflow-scrolling:touch;
       -webkit-mask-image:linear-gradient(
         to bottom,
@@ -474,7 +502,10 @@
   <dialog id="readingDialog">
     <div class="modal">
       <div class="modal-head">
-        <h2 id="readingTitle">今月のリーディング</h2>
+        <div class="reading-head-copy">
+          <div class="reading-eyebrow" id="readingEyebrow">2026年11月のテーマ</div>
+          <div class="reading-title">ルノルマン × ハワイアンロア</div>
+        </div>
         <button class="close" data-close="readingDialog" aria-label="閉じる">×</button>
       </div>
       <div class="modal-body" id="readingBody"></div>
@@ -873,7 +904,7 @@
 
   function openReading(){
     const data=currentMonthData();
-    $('readingTitle').textContent=`${state.viewYear}年${state.viewMonth}月のリーディング`;
+    $('readingEyebrow').textContent=`${state.viewYear}年${state.viewMonth}月のテーマ`;
     if(!data){
       $('readingBody').innerHTML='<div class="empty">この月はまだ登録されていません。</div>';
     }else{
