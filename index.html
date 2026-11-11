@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.13 -->
+  <!-- pecoyomi v0.14 -->
   <style>
     :root{
       --bg:#f7f4ef;
@@ -176,6 +176,9 @@
       z-index:0;
       white-space:nowrap;
       text-align:center;
+      opacity:1;
+      transition:opacity 55ms ease-out;
+      will-change:opacity;
     }
     .calendar-header,
     .weekdays,
@@ -295,6 +298,89 @@
       box-shadow:0 18px 60px rgba(0,0,0,.2);
     }
     dialog::backdrop{background:rgba(0,0,0,.32)}
+
+    /* 月テーマ全文：枠を持たない、ぼかし主体のガラス表現 */
+    #readingDialog{
+      width:min(92vw,520px);
+      max-height:min(86dvh,760px);
+      border:0;
+      border-radius:0;
+      padding:0;
+      background:transparent;
+      box-shadow:none;
+      color:var(--ink);
+      overflow:visible;
+    }
+    #readingDialog::backdrop{
+      background:rgba(247,244,239,.18);
+      -webkit-backdrop-filter:blur(16px) saturate(112%);
+      backdrop-filter:blur(16px) saturate(112%);
+    }
+    #readingDialog .modal{
+      background:transparent;
+      max-height:min(86dvh,760px);
+    }
+    #readingDialog .modal-head{
+      background:transparent;
+      border-bottom:0;
+      padding:10px 4px 12px;
+    }
+    #readingDialog .modal-head h2{
+      font-size:15px;
+      font-weight:700;
+      letter-spacing:.04em;
+    }
+    #readingDialog .close{
+      width:44px;
+      height:44px;
+      padding:0;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      color:var(--ink);
+      background:rgba(255,255,255,.16);
+      -webkit-backdrop-filter:blur(6px);
+      backdrop-filter:blur(6px);
+    }
+    #readingDialog .modal-body{
+      padding:8px 4px 24px;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+      -webkit-mask-image:linear-gradient(
+        to bottom,
+        transparent 0,
+        #000 10px,
+        #000 calc(100% - 10px),
+        transparent 100%
+      );
+      mask-image:linear-gradient(
+        to bottom,
+        transparent 0,
+        #000 10px,
+        #000 calc(100% - 10px),
+        transparent 100%
+      );
+    }
+    #readingDialog .section{
+      margin-bottom:28px;
+    }
+    #readingDialog .section h3{
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin:0 0 8px;
+      color:var(--sub);
+    }
+    #readingDialog .section .lead{
+      font-size:19px;
+      font-weight:750;
+      margin-bottom:10px;
+    }
+    #readingDialog .prose{
+      font-size:15px;
+      line-height:1.85;
+    }
+
     .modal{
       display:flex;flex-direction:column;max-height:min(84dvh,760px)
     }
@@ -915,31 +1001,43 @@
     if(swipeAnimating) return;
     swipeAnimating = true;
 
-    // 指を離した瞬間に月を切り替え、着地だけを短く見せる。
-    // 左フリック（direction > 0）では次月が右側から、
-    // 右フリックでは前月が左側から少しだけ入ってくる。
     const width = Math.max(monthSwipeRegion.clientWidth, 320);
-    changeMonth(direction);
+    const monthNumber = $('monthNumberBg');
 
-    const enterX = direction > 0 ? width * 0.10 : -width * 0.10;
-    monthSwipeRegion.style.transition = 'none';
-    monthSwipeRegion.style.transform = `translate3d(${enterX}px,0,0)`;
-    monthSwipeRegion.style.opacity = '.82';
+    // 月番号だけ先に短く退場。45ms後に月を更新して、すぐ入場させる。
+    monthNumber.style.transition = 'opacity 45ms ease-out';
+    monthNumber.style.opacity = '0';
 
-    requestAnimationFrame(()=>{
+    window.setTimeout(()=>{
+      changeMonth(direction);
+
+      const enterX = direction > 0 ? width * 0.10 : -width * 0.10;
+      monthSwipeRegion.style.transition = 'none';
+      monthSwipeRegion.style.transform = `translate3d(${enterX}px,0,0)`;
+      monthSwipeRegion.style.opacity = '.82';
+
+      monthNumber.style.transition = 'opacity 65ms ease-in';
       requestAnimationFrame(()=>{
-        monthSwipeRegion.style.transition = 'transform 110ms cubic-bezier(.2,.8,.3,1), opacity 90ms ease-out';
-        monthSwipeRegion.style.transform = 'translate3d(0,0,0)';
-        monthSwipeRegion.style.opacity = '1';
-
-        window.setTimeout(()=>{
-          swipeAnimating = false;
-          monthSwipeRegion.style.transition = '';
-          monthSwipeRegion.style.transform = '';
-          monthSwipeRegion.style.opacity = '';
-        }, 120);
+        monthNumber.style.opacity = '1';
       });
-    });
+
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+          monthSwipeRegion.style.transition = 'transform 110ms cubic-bezier(.2,.8,.3,1), opacity 90ms ease-out';
+          monthSwipeRegion.style.transform = 'translate3d(0,0,0)';
+          monthSwipeRegion.style.opacity = '1';
+
+          window.setTimeout(()=>{
+            swipeAnimating = false;
+            monthSwipeRegion.style.transition = '';
+            monthSwipeRegion.style.transform = '';
+            monthSwipeRegion.style.opacity = '';
+            monthNumber.style.transition = '';
+            monthNumber.style.opacity = '';
+          }, 120);
+        });
+      });
+    }, 45);
   }
 
   monthSwipeRegion.addEventListener('pointerdown',(e)=>{
