@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.17 -->
+  <!-- pecoyomi v0.18 -->
   <style>
     :root{
       --bg:#f7f4ef;
@@ -335,22 +335,19 @@
       height:auto;
       margin:0 auto;
       opacity:0;
-      transform:scale(.97);
-      transform-origin:center center;
-      transition:
-        transform 110ms cubic-bezier(.2,.8,.3,1),
-        opacity 90ms ease-out;
-      will-change:transform,opacity;
+      transition:opacity 90ms ease-out;
+      will-change:opacity;
     }
     #readingDialog.is-visible .modal{
       opacity:1;
-      transform:scale(1);
     }
     #readingDialog .modal-head{
       position:relative;
       top:auto;
       background:transparent;
-      border-bottom:0;
+      border:0;
+      outline:none;
+      box-shadow:none;
       padding:12px 14px;
       min-height:62px;
       display:flex;
@@ -358,6 +355,11 @@
       justify-content:center;
       cursor:pointer;
       -webkit-tap-highlight-color:transparent;
+    }
+    #readingDialog .modal-head:focus,
+    #readingDialog .modal-head:focus-visible{
+      outline:none;
+      box-shadow:none;
     }
     #readingDialog .reading-head-copy{
       min-width:0;
@@ -518,7 +520,7 @@
 
   <dialog id="readingDialog">
     <div class="modal">
-      <div class="modal-head" id="readingModalHead" role="button" tabindex="0" aria-label="月テーマ詳細を閉じる">
+      <div class="modal-head" id="readingModalHead" aria-label="月テーマ詳細を閉じる">
         <div class="reading-head-copy">
           <div class="reading-eyebrow" id="readingEyebrow">2026年11月</div>
           <div class="reading-title" id="readingThemeTitle">鳥 × 波に乗る</div>
@@ -1174,13 +1176,6 @@
   });
 
   $('readingModalHead').addEventListener('click',closeReading);
-  $('readingModalHead').addEventListener('keydown',(e)=>{
-    if(e.key==='Enter' || e.key===' '){
-      e.preventDefault();
-      closeReading();
-    }
-  });
-
   $('readingDialog').addEventListener('cancel',(e)=>{
     e.preventDefault();
     closeReading();
