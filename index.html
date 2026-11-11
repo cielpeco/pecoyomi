@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.38 -->
+  <!-- pecoyomi v0.39 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -138,7 +138,8 @@
     }
 
     /* 月テーマ詳細を開いている間は、有効色を少しだけ静かに */
-    body.reading-open .controlbtn.primary{
+    body.reading-open .controlbtn.primary,
+    body.edit-open .controlbtn.primary{
       background:rgba(81,81,111,.58);
       box-shadow:
         0 4px 12px rgba(55,55,82,.08),
@@ -146,11 +147,13 @@
         inset 0 1px 0 rgba(255,255,255,.18),
         inset 0 -1px 0 rgba(45,45,68,.07);
     }
-    body.reading-open .day.selected{
+    body.reading-open .day.selected,
+    body.edit-open .day.selected{
       background:rgba(81,81,111,.50);
       color:rgba(255,255,255,.96);
     }
-    body.reading-open #editMonth::before{
+    body.reading-open #editMonth::before,
+    body.edit-open #editMonth::before{
       background:rgba(81,81,111,.64);
     }
     .theme-main{min-width:0;width:100%;text-align:center}
@@ -885,8 +888,12 @@
       background:rgba(247,188,214,.92);
     }
     .report{
-      margin-top:12px;padding:11px 12px;border-radius:999px;
-      background:var(--accent-soft);font-size:13px;line-height:1.6;
+      margin-top:12px;
+      padding:16px 18px;
+      border-radius:28px;
+      background:var(--accent-soft);
+      font-size:13px;
+      line-height:1.6;
     }
     .report.bad{background:#f4e1e1;color:#7c3434}
     .hint{font-size:12px;color:var(--sub);line-height:1.6;margin-top:8px}
@@ -1406,10 +1413,12 @@
     state.pending=null;
     renderDelete(data);
     const dlg=$('editDialog');
+    document.body.classList.add('edit-open');
     fadeInDialog(dlg);
   }
 
   function closeEditor(){
+    document.body.classList.remove('edit-open');
     fadeOutDialog($('editDialog'));
   }
 
