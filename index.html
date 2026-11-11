@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.39 -->
+  <!-- pecoyomi v0.40 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -434,7 +434,7 @@
       gap:7px;
       flex:0 0 auto;
     }
-    .subbtn{min-height:42px;font-size:13px;color:var(--sub)}
+    .subbtn{min-height:42px;font-size:13px;color:rgba(81,81,111,.94)}
 
     /* 月を追加 / 編集：長押しで裏メニューへ。0.5秒後から中央塗りを0.7秒表示 */
     #editMonth{
@@ -891,7 +891,14 @@
       margin-top:12px;
       padding:16px 18px;
       border-radius:28px;
-      background:var(--accent-soft);
+      background:rgba(255,255,255,.24);
+      -webkit-backdrop-filter:blur(10px) saturate(110%);
+      backdrop-filter:blur(10px) saturate(110%);
+      box-shadow:
+        0 4px 16px rgba(70,60,50,.04),
+        0 1px 2px rgba(70,60,50,.08),
+        inset 0 1px 0 rgba(255,255,255,.56),
+        inset 0 -1px 0 rgba(70,60,50,.04);
       font-size:13px;
       line-height:1.6;
     }
