@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.16 -->
+  <!-- pecoyomi v0.17 -->
   <style>
     :root{
       --bg:#f7f4ef;
@@ -321,6 +321,11 @@
       background:rgba(247,244,239,.18);
       -webkit-backdrop-filter:blur(16px) saturate(112%);
       backdrop-filter:blur(16px) saturate(112%);
+      opacity:0;
+      transition:opacity 90ms ease-out;
+    }
+    #readingDialog.is-visible::backdrop{
+      opacity:1;
     }
     #readingDialog .modal{
       background:transparent;
@@ -329,6 +334,17 @@
       max-height:100%;
       height:auto;
       margin:0 auto;
+      opacity:0;
+      transform:scale(.97);
+      transform-origin:center center;
+      transition:
+        transform 110ms cubic-bezier(.2,.8,.3,1),
+        opacity 90ms ease-out;
+      will-change:transform,opacity;
+    }
+    #readingDialog.is-visible .modal{
+      opacity:1;
+      transform:scale(1);
     }
     #readingDialog .modal-head{
       position:relative;
@@ -340,6 +356,8 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
     }
     #readingDialog .reading-head-copy{
       min-width:0;
@@ -388,14 +406,14 @@
       text-transform:uppercase;
       margin:0 0 8px;
       color:var(--sub);
-      display:flex;
-      align-items:center;
-      gap:10px;
+      display:block;
     }
     #readingDialog .section h3::after{
       content:"";
+      display:block;
+      width:100%;
       height:1px;
-      flex:1 1 auto;
+      margin-top:7px;
       background:rgba(110,98,88,.22);
     }
     #readingDialog .section .lead{
@@ -500,7 +518,7 @@
 
   <dialog id="readingDialog">
     <div class="modal">
-      <div class="modal-head">
+      <div class="modal-head" id="readingModalHead" role="button" tabindex="0" aria-label="月テーマ詳細を閉じる">
         <div class="reading-head-copy">
           <div class="reading-eyebrow" id="readingEyebrow">2026年11月</div>
           <div class="reading-title" id="readingThemeTitle">鳥 × 波に乗る</div>
@@ -922,7 +940,21 @@
         ${data.fullMoon ? `<section class="section"><h3>満月 ${data.fullMoon.month}/${data.fullMoon.day}</h3><div class="lead">${escapeHtml(data.fullMoon.card)}</div><div class="prose">${renderText(data.fullMoon.text)}</div></section>`:''}
       `;
     }
-    $('readingDialog').showModal();
+    const dlg=$('readingDialog');
+    dlg.classList.remove('is-visible');
+    dlg.showModal();
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>dlg.classList.add('is-visible'));
+    });
+  }
+
+  function closeReading(){
+    const dlg=$('readingDialog');
+    if(!dlg.open) return;
+    dlg.classList.remove('is-visible');
+    window.setTimeout(()=>{
+      if(dlg.open) dlg.close();
+    },110);
   }
 
   function openEditor(){
@@ -1138,7 +1170,20 @@
   });
 
   $('readingDialog').addEventListener('click',(e)=>{
-    if(e.target === $('readingDialog')) $('readingDialog').close();
+    if(e.target === $('readingDialog')) closeReading();
+  });
+
+  $('readingModalHead').addEventListener('click',closeReading);
+  $('readingModalHead').addEventListener('keydown',(e)=>{
+    if(e.key==='Enter' || e.key===' '){
+      e.preventDefault();
+      closeReading();
+    }
+  });
+
+  $('readingDialog').addEventListener('cancel',(e)=>{
+    e.preventDefault();
+    closeReading();
   });
 
   [$('editDialog'),$('backupDialog')].forEach(dlg=>{
