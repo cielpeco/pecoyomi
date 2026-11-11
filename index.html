@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.15 -->
+  <!-- pecoyomi v0.16 -->
   <style>
     :root{
       --bg:#f7f4ef;
@@ -324,8 +324,11 @@
     }
     #readingDialog .modal{
       background:transparent;
+      width:100%;
+      max-width:520px;
       max-height:100%;
-      height:100%;
+      height:auto;
+      margin:0 auto;
     }
     #readingDialog .modal-head{
       position:relative;
@@ -336,12 +339,12 @@
       min-height:62px;
       display:flex;
       align-items:center;
-      justify-content:space-between;
+      justify-content:center;
     }
     #readingDialog .reading-head-copy{
       min-width:0;
+      width:100%;
       text-align:center;
-      flex:1 1 auto;
     }
     #readingDialog .reading-eyebrow{
       font-size:11px;
@@ -354,19 +357,6 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-    }
-    #readingDialog .close{
-      width:44px;
-      height:44px;
-      padding:0;
-      display:grid;
-      place-items:center;
-      border-radius:0;
-      color:var(--sub);
-      background:transparent;
-      -webkit-backdrop-filter:none;
-      backdrop-filter:none;
-      flex:0 0 44px;
     }
     #readingDialog .modal-body{
       padding:8px 14px 24px;
@@ -398,6 +388,15 @@
       text-transform:uppercase;
       margin:0 0 8px;
       color:var(--sub);
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    #readingDialog .section h3::after{
+      content:"";
+      height:1px;
+      flex:1 1 auto;
+      background:rgba(110,98,88,.22);
     }
     #readingDialog .section .lead{
       font-size:19px;
@@ -503,10 +502,9 @@
     <div class="modal">
       <div class="modal-head">
         <div class="reading-head-copy">
-          <div class="reading-eyebrow" id="readingEyebrow">2026年11月のテーマ</div>
-          <div class="reading-title">ルノルマン × ハワイアンロア</div>
+          <div class="reading-eyebrow" id="readingEyebrow">2026年11月</div>
+          <div class="reading-title" id="readingThemeTitle">鳥 × 波に乗る</div>
         </div>
-        <button class="close" data-close="readingDialog" aria-label="閉じる">×</button>
       </div>
       <div class="modal-body" id="readingBody"></div>
     </div>
@@ -904,11 +902,12 @@
 
   function openReading(){
     const data=currentMonthData();
-    $('readingEyebrow').textContent=`${state.viewYear}年${state.viewMonth}月のテーマ`;
+    $('readingEyebrow').textContent=`${state.viewYear}年${state.viewMonth}月`;
+    const themeName=data ? [data.theme.lenormand,data.theme.loa].filter(Boolean).join(' × ') : '';
+    $('readingThemeTitle').textContent=themeName || 'テーマ未登録';
     if(!data){
       $('readingBody').innerHTML='<div class="empty">この月はまだ登録されていません。</div>';
     }else{
-      const themeName=[data.theme.lenormand,data.theme.loa].filter(Boolean).join(' × ');
       $('readingBody').innerHTML=`
         <section class="section">
           <h3>月テーマ</h3>
@@ -1138,7 +1137,11 @@
     btn.addEventListener('click',()=>$(btn.dataset.close).close());
   });
 
-  [$('readingDialog'),$('editDialog'),$('backupDialog')].forEach(dlg=>{
+  $('readingDialog').addEventListener('click',(e)=>{
+    if(e.target === $('readingDialog')) $('readingDialog').close();
+  });
+
+  [$('editDialog'),$('backupDialog')].forEach(dlg=>{
     dlg.addEventListener('click',(e)=>{
       const r=dlg.getBoundingClientRect();
       if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) dlg.close();
