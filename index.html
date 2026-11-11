@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.36 -->
+  <!-- pecoyomi v0.37 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -89,6 +89,8 @@
         env(safe-area-inset-top)
         auto
         env(safe-area-inset-bottom);
+      position:relative;
+      isolation:isolate;
     }
     .swipe-region{
       flex:1 1 auto;
@@ -249,14 +251,18 @@
     }
     .month-number-bg{
       position:absolute;
-      /* 決め打ち位置：内容量に引っ張られず、常に同じ場所へ */
-      left:calc(100% / 7);
-      top:-6px;
+      /*
+        5行カレンダー時の位置を基準に完全固定。
+        横中心 = SUN / MON の列中心の中間。
+        下辺 = 曜日ラベルの少し上。
+      */
+      left:calc(14.2857% + 10px);
+      bottom:384px;
       transform:translateX(-50%);
-      transform-origin:center top;
+      transform-origin:center bottom;
       width:1.42em;
       display:flex;
-      align-items:flex-start;
+      align-items:flex-end;
       justify-content:center;
       font-size:222px;
       line-height:.78;
@@ -267,12 +273,19 @@
       text-shadow:none;
       pointer-events:none;
       user-select:none;
-      z-index:1;
+      z-index:0;
       white-space:nowrap;
       text-align:center;
       opacity:1;
       transition:opacity 55ms ease-out;
       will-change:opacity;
+    }
+        .swipe-region,
+    .calendar,
+    .controls,
+    .subcontrols{
+      position:relative;
+      z-index:2;
     }
     .calendar-header,
     .weekdays,
@@ -329,7 +342,7 @@
       .swipe-region{gap:7px}
       .day{min-height:42px;gap:2px}
       .daily{min-height:105px;padding:6px 4px 8px}
-      .month-number-bg{font-size:186px;left:calc(100% / 7);top:-2px;transform:translateX(-50%);width:1.42em}
+      .month-number-bg{font-size:186px;left:calc(14.2857% + 10px);bottom:356px;transform:translateX(-50%);width:1.42em}
       .daily-card{margin-top:14px}
     }
     .day.blank{visibility:hidden}
@@ -872,6 +885,7 @@
 </head>
 <body>
   <main class="app">
+    <div class="month-number-bg" id="monthNumberBg">11</div>
     <section class="swipe-region" id="monthSwipeRegion" aria-label="月切り替え領域">
       <button class="theme" id="themeButton" type="button">
         <div class="theme-main">
@@ -896,7 +910,6 @@
     </section>
 
     <section class="calendar">
-      <div class="month-number-bg" id="monthNumberBg">11</div>
       <div class="calendar-header">
         <div class="calendar-month" id="monthTitle">NOVEMBER 2026</div>
       </div>
