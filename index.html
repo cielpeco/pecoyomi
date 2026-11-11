@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-  <meta name="theme-color" content="#f7f4ef" />
+  <meta name="theme-color" content="#FFFAFC" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.25 -->
+  <!-- pecoyomi v0.26 -->
   <style>
     :root{
-      --bg:#F5EFF2;
+      --bg:#FFFAFC;
       --panel:#ffffff;
       --ink:#242424;
       --sub:#756f69;
@@ -30,33 +30,35 @@
       font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
     }
     html{
-      background:#F5EFF2;
+      background:#FFFAFC;
     }
     body{
       overflow:hidden;
+      /* 3つの静止したにじみ。青緑はフッターへ広く、上部は明るく。 */
       background:
         radial-gradient(
-          ellipse 72% 58% at 6% 7%,
-          rgba(229,212,216,.88) 0%,
-          rgba(229,212,216,.52) 38%,
-          rgba(229,212,216,0) 74%
+          ellipse 87% 57% at 0% 9%,
+          rgba(245,193,212,.69) 0%,
+          rgba(245,205,222,.43) 38%,
+          rgba(245,205,222,0) 79%
         ),
         radial-gradient(
-          ellipse 78% 62% at 116% 34%,
-          rgba(232,226,236,.92) 0%,
-          rgba(232,226,236,.56) 40%,
-          rgba(232,226,236,0) 76%
+          ellipse 94% 68% at 120% 33%,
+          rgba(217,202,243,.78) 0%,
+          rgba(228,215,247,.51) 41%,
+          rgba(228,215,247,0) 80%
         ),
         radial-gradient(
-          ellipse 82% 66% at -12% 108%,
-          rgba(217,229,229,.92) 0%,
-          rgba(217,229,229,.56) 42%,
-          rgba(217,229,229,0) 78%
+          ellipse 128% 69% at 10% 113%,
+          rgba(169,222,216,.75) 0%,
+          rgba(193,236,229,.50) 43%,
+          rgba(193,236,229,0) 83%
         ),
         linear-gradient(
           160deg,
-          #F5EFF2 0%,
-          #E8E4DC 100%
+          #FFFAFC 0%,
+          #F9F6FF 49%,
+          #FCFAF3 100%
         );
       background-repeat:no-repeat;
       background-attachment:fixed;
@@ -92,9 +94,9 @@
     }
     
     .theme{
-      background:rgba(255,255,255,.20);
-      -webkit-backdrop-filter:blur(10px) saturate(112%);
-      backdrop-filter:blur(10px) saturate(112%);
+      background:rgba(255,255,255,.095);
+      -webkit-backdrop-filter:blur(8px) saturate(112%);
+      backdrop-filter:blur(8px) saturate(112%);
       border:0;
       border-radius:var(--radius);
       padding:12px 14px;
@@ -112,7 +114,7 @@
         box-shadow 70ms ease-out;
     }
     .theme:active{
-      background:rgba(255,255,255,.28);
+      background:rgba(255,255,255,.16);
       box-shadow:
         0 2px 9px rgba(70,60,50,.045),
         0 1px 2px rgba(70,60,50,.09),
