@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.27 -->
+  <!-- pecoyomi v0.28 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -381,6 +381,50 @@
       flex:0 0 auto;
     }
     .subbtn{min-height:42px;font-size:13px;color:var(--sub)}
+
+    /* 月を追加 / 編集：長押しで裏メニューへ。1秒後から中央塗りを3秒表示 */
+    #editMonth{
+      position:relative;
+      overflow:hidden;
+      isolation:isolate;
+      -webkit-touch-callout:none;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+    #editMonth::before{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:120%;
+      aspect-ratio:1 / 1;
+      border-radius:50%;
+      background:rgba(110,98,88,.76);
+      opacity:0;
+      transform:translate(-50%,-50%) scale(0);
+      transform-origin:center center;
+      transition:
+        transform 180ms ease-out,
+        opacity 120ms ease-out;
+      pointer-events:none;
+      z-index:0;
+    }
+    #editMonth .edit-month-label{
+      position:relative;
+      z-index:1;
+      transition:color 180ms ease-out;
+    }
+    #editMonth.is-secret-filling::before{
+      opacity:1;
+      transform:translate(-50%,-50%) scale(1);
+      transition:
+        transform 3000ms linear,
+        opacity 80ms ease-out;
+    }
+    #editMonth.is-secret-filling .edit-month-label{
+      color:#fff;
+      transition:color 3000ms linear;
+    }
 
 
     /* 月テーマ：特殊ボタン枠。今後、通常ボタンと別演出に調整できるよう独立 */
@@ -782,7 +826,7 @@
     </nav>
 
     <div class="subcontrols">
-      <button class="subbtn" id="editMonth">月を追加 / 編集</button>
+      <button class="subbtn" id="editMonth"><span class="edit-month-label">月を追加 / 編集</span></button>
       <button class="hidden" id="backupBtn" aria-hidden="true" tabindex="-1">バックアップ</button>
     </div>
   </main>
@@ -1450,7 +1494,17 @@
   $('nextDay').addEventListener('click',()=>changeDay(1));
   $('todayBtn').addEventListener('click',goToday);
   $('themeButton').addEventListener('click',openReading);
-  $('editMonth').addEventListener('click',openEditor);
+  let suppressEditMonthClick = false;
+
+  $('editMonth').addEventListener('click',(e)=>{
+    if(suppressEditMonthClick){
+      e.preventDefault();
+      e.stopPropagation();
+      suppressEditMonthClick = false;
+      return;
+    }
+    openEditor();
+  });
   $('backupBtn').addEventListener('click',()=>$('backupDialog').showModal());
   $('exportBtn').addEventListener('click',exportBackup);
 
@@ -1477,6 +1531,65 @@
     e.preventDefault();
     closeEditor();
   });
+
+  // 「月を追加 / 編集」の裏メニュー：
+  // 1秒ホールドで進捗開始 → 中央から3秒かけて塗り切る → バックアップを開く。
+  (() => {
+    const btn = $('editMonth');
+    let holdTimer = null;
+    let fillTimer = null;
+    let filling = false;
+    let secretOpened = false;
+
+    const clearTimers = ()=>{
+      if(holdTimer){
+        window.clearTimeout(holdTimer);
+        holdTimer = null;
+      }
+      if(fillTimer){
+        window.clearTimeout(fillTimer);
+        fillTimer = null;
+      }
+    };
+
+    const resetFill = ()=>{
+      btn.classList.remove('is-secret-filling');
+      filling = false;
+    };
+
+    btn.addEventListener('pointerdown',()=>{
+      clearTimers();
+      resetFill();
+      secretOpened = false;
+
+      holdTimer = window.setTimeout(()=>{
+        filling = true;
+        btn.classList.add('is-secret-filling');
+
+        fillTimer = window.setTimeout(()=>{
+          secretOpened = true;
+          suppressEditMonthClick = true;
+          btn.classList.remove('is-secret-filling');
+          filling = false;
+          $('backupDialog').showModal();
+        },3000);
+      },1000);
+    });
+
+    const cancelLongPress = ()=>{
+      // 1秒を超えて一度でも裏メニュー判定に入った場合は、
+      // 指を途中で離しても通常の編集クリックへ流さない。
+      if(filling || secretOpened){
+        suppressEditMonthClick = true;
+      }
+      clearTimers();
+      if(!secretOpened) resetFill();
+    };
+
+    btn.addEventListener('pointerup',cancelLongPress);
+    btn.addEventListener('pointercancel',cancelLongPress);
+    btn.addEventListener('pointerleave',cancelLongPress);
+  })();
 
   [$('backupDialog')].forEach(dlg=>{
     dlg.addEventListener('click',(e)=>{
