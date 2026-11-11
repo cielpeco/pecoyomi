@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.30 -->
+  <!-- pecoyomi v0.31 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -479,11 +479,17 @@
         env(safe-area-inset-bottom);
       border:0;
       border-radius:0;
+      outline:none;
       padding:18px 14px 12px;
       background:transparent;
       box-shadow:none;
       color:var(--ink);
       overflow:hidden;
+    }
+    #readingDialog:focus,
+    #readingDialog:focus-visible{
+      outline:none;
+      box-shadow:none;
     }
     #readingDialog::backdrop{
       background:rgba(247,244,239,.18);
@@ -707,7 +713,16 @@
       backdrop-filter:blur(18px) saturate(108%);
       border:0;
       border-radius:26px;
+      outline:none;
       box-shadow:0 18px 60px rgba(32,26,24,.22);
+    }
+    #backupDialog:focus,
+    #backupDialog:focus-visible,
+    #backupDialog button:focus,
+    #backupDialog button:focus-visible,
+    #backupDialog label:focus,
+    #backupDialog label:focus-visible{
+      outline:none;
     }
     #backupDialog::backdrop{
       background:rgba(28,24,28,.42);
@@ -728,6 +743,10 @@
     }
     #backupDialog .modal-body{
       padding:12px 18px 20px;
+    }
+    #backupDialog .action{
+      -webkit-appearance:none;
+      appearance:none;
     }
 
     .modal{
