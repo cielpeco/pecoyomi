@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.46 -->
+  <!-- pecoyomi v0.47 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1461,17 +1461,25 @@
     scheduleReadingReveal(head,70,dlg);
 
     const rootRect=body.getBoundingClientRect();
+    const triggerBottom=rootRect.top + rootRect.height * .84;
     let visibleOrder=0;
     bodyItems.forEach(el=>{
       const rect=el.getBoundingClientRect();
-      const inView=rect.bottom>rootRect.top && rect.top<rootRect.bottom;
-      if(inView){
+
+      // 初期表示では「少し見切れているだけ」の項目はまだ再生しない。
+      // 項目の先頭が表示領域の下84%より上に入っているものだけを初期入場扱いにする。
+      const initiallyReady=
+        rect.bottom>rootRect.top &&
+        rect.top<rootRect.bottom &&
+        rect.top<=triggerBottom;
+
+      if(initiallyReady){
         scheduleReadingReveal(el,140 + visibleOrder * 70,dlg);
         visibleOrder++;
       }
     });
 
-    // 初期画面外の項目は、スクロールで画面内へ入って約0.3秒後に再生。
+    // 初期画面外の項目は、下端から約16%中へ入ってから0.3秒待って再生。
     if('IntersectionObserver' in window){
       readingEntranceObserver=new IntersectionObserver(entries=>{
         entries.forEach(entry=>{
@@ -1484,7 +1492,8 @@
         });
       },{
         root:body,
-        threshold:.08
+        rootMargin:'0px 0px -16% 0px',
+        threshold:0
       });
 
       bodyItems.forEach(el=>{
