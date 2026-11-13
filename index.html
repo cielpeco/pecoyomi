@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.56 -->
+  <!-- pecoyomi v0.57 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -96,6 +96,18 @@
         env(safe-area-inset-bottom);
       position:relative;
       isolation:isolate;
+
+      /*
+        初回render前はカレンダー日付がまだ空なので、ここを見せると
+        JS描画後にレイアウトが跳ねる。完成した1フレームだけを見せる。
+      */
+      visibility:hidden;
+      opacity:0;
+    }
+    .app.is-boot-ready{
+      visibility:visible;
+      opacity:1;
+      transition:opacity 100ms ease-out;
     }
     .swipe-region{
       /*
@@ -710,7 +722,7 @@
       will-change:opacity;
     }
     #readingDialog.first-entrance.is-visible .entrance-pending.entrance-visible{
-      animation:readingItemEntrance 1360ms cubic-bezier(.22,.68,.24,1) both;
+      animation:readingItemEntrance 1000ms cubic-bezier(.22,.68,.24,1) both;
     }
     @keyframes readingItemEntrance{
       0%{opacity:0;}
@@ -2036,6 +2048,13 @@
   });
 
   render();
+
+  // 初回カレンダー・本文・レイアウトが確定してからUIを一度だけ表示。
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      document.querySelector('.app')?.classList.add('is-boot-ready');
+    });
+  });
 })();
 </script>
 </body>
