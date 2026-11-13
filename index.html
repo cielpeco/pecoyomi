@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.76 -->
+  <!-- pecoyomi v0.77 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1474,6 +1474,40 @@
           rgba(107,217,252,.72) 72%,
           rgba(101,212,252,.72) 100%
         );
+    }
+
+
+    /* v0.77 — 「今日」は押下しても色・反射・影を変えない。
+       共通の .is-pressed による縮小アニメーションだけ適用する。 */
+    #todayBtn{
+      --today-surface:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.12) 0%,
+          rgba(255,255,255,.04) 28%,
+          rgba(255,255,255,0) 50%
+        ),
+        linear-gradient(
+          180deg,
+          #6FE0FC 0%,
+          #6FE0FC 50%,
+          #6BD9FC 72%,
+          #65D4FC 100%
+        );
+      --today-shadow:var(--ios-glass-shadow);
+    }
+    #todayBtn,
+    #todayBtn:active,
+    #todayBtn.is-pressed,
+    body.reading-open #todayBtn,
+    body.edit-open #todayBtn,
+    body.reading-open #todayBtn:active,
+    body.edit-open #todayBtn:active,
+    body.reading-open #todayBtn.is-pressed,
+    body.edit-open #todayBtn.is-pressed{
+      background:var(--today-surface);
+      box-shadow:var(--today-shadow);
+      color:#fff;
     }
 
 </style>
