@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.55 -->
+  <!-- pecoyomi v0.56 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1909,6 +1909,9 @@
   // 0.5秒ホールドで進捗開始 → 中央から0.7秒かけて塗り切る → バックアップを開く。
   (() => {
     const btn = $('editMonth');
+    const label = btn.querySelector('.edit-month-label');
+    const normalLabel = '月を追加 / 編集';
+    const backupLabel = 'バックアップ';
     let holdTimer = null;
     let fillTimer = null;
     let filling = false;
@@ -1927,6 +1930,7 @@
 
     const resetFill = ()=>{
       btn.classList.remove('is-secret-filling');
+      if(label) label.textContent = normalLabel;
       filling = false;
     };
 
@@ -1937,12 +1941,14 @@
 
       holdTimer = window.setTimeout(()=>{
         filling = true;
+        if(label) label.textContent = backupLabel;
         btn.classList.add('is-secret-filling');
 
         fillTimer = window.setTimeout(()=>{
           secretOpened = true;
           suppressEditMonthClick = true;
           btn.classList.remove('is-secret-filling');
+          if(label) label.textContent = normalLabel;
           filling = false;
           openBackup();
         },700);
