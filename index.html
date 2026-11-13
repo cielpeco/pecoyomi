@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.78 -->
+  <!-- pecoyomi v0.79 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1516,6 +1516,17 @@
     .controlbtn.primary,
     .action:not(.secondary):not(.danger){
       --active-glass-face:
+        /* 1pxの上下エッジ反射。端に向けて弱め、丸い輪郭は強調しない */
+        linear-gradient(90deg,
+          transparent 0%, rgba(255,255,255,.65) 15%,
+          rgba(255,255,255,.86) 50%, rgba(255,255,255,.65) 85%,
+          transparent 100%
+        ) center top 1px / 92% 1px no-repeat,
+        linear-gradient(90deg,
+          transparent 0%, rgba(255,255,255,.48) 15%,
+          rgba(255,255,255,.68) 50%, rgba(255,255,255,.48) 85%,
+          transparent 100%
+        ) center bottom 1px / 92% 1px no-repeat,
         linear-gradient(180deg,
           rgba(255,255,255,.42) 0px,
           rgba(255,255,255,.24) 2px,
@@ -1550,6 +1561,9 @@
       background:var(--active-glass-face);
       color:#fff;
     }
+
+    /* 今日ボタンも同じ反射材質を参照。押下中は縮小のみ。 */
+    #todayBtn{ --today-surface:var(--active-glass-face); }
 
     /* 削除ボタン：#FCA7DDを基調に、同じガラスの上下反射を適用 */
     .action.danger{
