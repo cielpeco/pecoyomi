@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.81 -->
+  <!-- pecoyomi v0.82 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -994,617 +994,109 @@
     .hint{font-size:12px;color:var(--sub);line-height:1.6;margin-top:8px}
     .hidden{display:none!important}
 
-    /* v0.67: 二重リングを避け、反射はガラスの内周だけに統一 */
+    /* v0.82 — 共通ガラスマテリアル。白を基準に、青・ピンクはTintだけ差し替える。
+       旧版の追加エッジ／個別シャドウ指定は撤去済み。 */
     .theme,
     .controlbtn:not(.ghost-nav),
     .subbtn,
     .action{
-      /* 既存の1px枠分の寸法を維持しつつ、外周の白線だけを消す */
-      border:1px solid transparent;
-    }
-    .theme{
-      box-shadow:
-        0 7px 20px rgba(70,60,50,.055),
-        0 1px 2px rgba(70,60,50,.08),
-        inset 0 1px 0 rgba(255,255,255,.90),
-        inset 0 -1px 0 rgba(255,255,255,.54);
-    }
-    .controlbtn:not(.ghost-nav),
-    .subbtn{
-      box-shadow:
-        0 7px 18px rgba(70,60,50,.055),
-        0 1px 2px rgba(70,60,50,.075),
-        inset 0 1px 0 rgba(255,255,255,.92),
-        inset 0 -1px 0 rgba(255,255,255,.56);
-    }
-    .controlbtn.primary{
-      box-shadow:
-        0 7px 18px rgba(55,55,82,.12),
-        0 1px 2px rgba(48,48,72,.12),
-        inset 0 1px 0 rgba(255,255,255,.68),
-        inset 0 -1px 0 rgba(255,255,255,.34);
-    }
-    .action{
-      box-shadow:
-        0 4px 14px rgba(55,55,82,.11),
-        0 1px 2px rgba(48,48,72,.15),
-        inset 0 1px 0 rgba(255,255,255,.68),
-        inset 0 -1px 0 rgba(255,255,255,.32);
-    }
-    .action.secondary{
-      box-shadow:
-        0 4px 14px rgba(70,60,50,.05),
-        0 1px 2px rgba(70,60,50,.105),
-        inset 0 1px 0 rgba(255,255,255,.92),
-        inset 0 -1px 0 rgba(255,255,255,.56);
-    }
-    .action.danger{
-      box-shadow:
-        0 4px 14px rgba(170,60,105,.08),
-        0 1px 2px rgba(150,50,95,.14),
-        inset 0 1px 0 rgba(255,255,255,.85),
-        inset 0 -1px 0 rgba(255,255,255,.40);
-    }
-    .theme:active,
-    .controlbtn:not(.ghost-nav):active,
-    .subbtn:active,
-    .controlbtn:not(.ghost-nav).is-pressed,
-    .subbtn.is-pressed{
-      box-shadow:
-        0 2px 8px rgba(70,60,50,.06),
-        0 1px 2px rgba(70,60,50,.07),
-        inset 0 1px 0 rgba(255,255,255,.65),
-        inset 0 -1px 0 rgba(255,255,255,.34);
-    }
-    #editMonth.is-secret-filling,
-    #editMonth.is-secret-filling:active{
-      box-shadow:
-        0 4px 14px rgba(70,60,50,.05),
-        0 1px 2px rgba(70,60,50,.105),
-        inset 0 1px 0 rgba(255,255,255,.90),
-        inset 0 -1px 0 rgba(255,255,255,.54);
-    }
-
-    /* v0.69: 一周するinset縁を廃止し、中央から左右へ消える上下の反射へ。
-       反射はbackgroundレイヤーなので角丸のカーブには回り込まない。 */
-    .theme,
-    .controlbtn:not(.ghost-nav),
-    .subbtn,
-    .action{
-      --glass-surface:
-        linear-gradient(180deg,
-          rgba(255,255,255,.33) 0%,
-          rgba(255,255,255,.16) 48%,
-          rgba(255,255,255,.09) 100%);
-      --glass-pressed-surface:rgba(255,255,255,.29);
-      --glass-color:rgba(81,81,111,.94);
+      --glass-tint:rgba(255,255,255,.16);
+      --glass-ink:rgba(81,81,111,.94);
+      --glass-border:rgba(92,88,84,.23);
       --glass-shadow:
-        0 7px 18px rgba(70,60,50,.055),
-        0 1px 2px rgba(70,60,50,.075);
-      --glass-pressed-shadow:
-        0 2px 8px rgba(70,60,50,.06),
-        0 1px 2px rgba(70,60,50,.07);
-      --glass-top-reflection:rgba(255,255,255,.94);
-      --glass-bottom-reflection:rgba(255,255,255,.58);
-
-      border:1px solid transparent;
-      background:
-        linear-gradient(90deg,
-          transparent 0%,
-          var(--glass-top-reflection) 50%,
-          transparent 100%) center top 1px / 76% 2px no-repeat,
-        linear-gradient(90deg,
-          transparent 0%,
-          var(--glass-bottom-reflection) 50%,
-          transparent 100%) center bottom 1px / 66% 1px no-repeat,
-        var(--glass-surface);
-      color:var(--glass-color);
-      -webkit-backdrop-filter:blur(12px) saturate(112%);
-      backdrop-filter:blur(12px) saturate(112%);
-      box-shadow:var(--glass-shadow);
-    }
-
-    /* 反射の描き方は共通、ボタンごとの違いは表面色と影の濃さのみ。 */
-    .controlbtn.primary,
-    .action:not(.secondary):not(.danger){
-      --glass-surface:
-        linear-gradient(180deg,
-          rgba(118,118,151,.88) 0%,
-          rgba(81,81,111,.80) 45%,
-          rgba(72,72,101,.84) 100%);
-      --glass-pressed-surface:rgba(81,81,111,.86);
-      --glass-color:#fff;
-      --glass-shadow:
-        0 7px 18px rgba(55,55,82,.12),
-        0 1px 2px rgba(48,48,72,.12);
-      --glass-pressed-shadow:
-        0 2px 8px rgba(55,55,82,.10),
-        0 1px 2px rgba(48,48,72,.10);
-      --glass-top-reflection:rgba(255,255,255,.91);
-      --glass-bottom-reflection:rgba(255,255,255,.56);
-    }
-    .action.secondary{
-      --glass-color:rgba(81,81,111,.94);
-    }
-    .action.danger{
-      --glass-surface:
-        linear-gradient(180deg,
-          rgba(255,230,241,.90) 0%,
-          rgba(250,205,224,.80) 48%,
-          rgba(245,193,216,.76) 100%);
-      --glass-pressed-surface:rgba(247,188,214,.92);
-      --glass-color:#a93c69;
-      --glass-shadow:
-        0 7px 18px rgba(170,60,105,.08),
-        0 1px 2px rgba(150,50,95,.10);
-      --glass-pressed-shadow:
-        0 2px 8px rgba(170,60,105,.07),
-        0 1px 2px rgba(150,50,95,.08);
-      --glass-top-reflection:rgba(255,255,255,.90);
-      --glass-bottom-reflection:rgba(255,255,255,.54);
-    }
-
-    /* 押下時も上下の反射を維持。面の色・影だけを変える。 */
-    .theme:active,
-    .controlbtn:not(.ghost-nav):active,
-    .subbtn:active,
-    .action:active,
-    .controlbtn:not(.ghost-nav).is-pressed,
-    .subbtn.is-pressed,
-    .action.is-pressed{
-      background:
-        linear-gradient(90deg,
-          transparent 0%,
-          var(--glass-top-reflection) 50%,
-          transparent 100%) center top 1px / 76% 2px no-repeat,
-        linear-gradient(90deg,
-          transparent 0%,
-          var(--glass-bottom-reflection) 50%,
-          transparent 100%) center bottom 1px / 66% 1px no-repeat,
-        var(--glass-pressed-surface);
-      box-shadow:var(--glass-pressed-shadow);
-    }
-
-    .theme{min-height:62px;}
-
-    /* 長押し中の円形塗り(::before)はそのまま、ボタンの縁は共通。 */
-    #editMonth.is-secret-filling,
-    #editMonth.is-secret-filling:active{
-      box-shadow:var(--glass-shadow);
-    }
-  
-    /* v0.70 — iPhone下部UIを基準にした、静かな半透明ガラス */
-    .theme,
-    .controlbtn:not(.ghost-nav),
-    .subbtn,
-    .action{
-      --ios-glass-surface:rgba(255,255,255,.16);
-      --ios-glass-border:rgba(82,78,74,.23);
-      --ios-glass-color:rgba(81,81,111,.94);
-      --ios-glass-shadow:
         0 1px 1px rgba(55,50,45,.055),
         0 5px 14px rgba(55,50,45,.035);
-      --ios-glass-pressed:rgba(255,255,255,.23);
-      --ios-glass-pressed-shadow:
-        0 1px 1px rgba(55,50,45,.05),
-        0 2px 7px rgba(55,50,45,.025);
-
-      border:1px solid var(--ios-glass-border);
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.12) 0%,
-          rgba(255,255,255,.035) 48%,
-          rgba(255,255,255,0) 100%
-        ),
-        var(--ios-glass-surface);
-      color:var(--ios-glass-color);
-      -webkit-backdrop-filter:blur(20px) saturate(120%);
-      backdrop-filter:blur(20px) saturate(120%);
-      box-shadow:var(--ios-glass-shadow);
-    }
-
-    .controlbtn.primary,
-    .action:not(.secondary):not(.danger){
-      --ios-glass-surface:rgba(81,81,111,.72);
-      --ios-glass-border:rgba(62,62,84,.30);
-      --ios-glass-color:#fff;
-      --ios-glass-shadow:
-        0 1px 1px rgba(45,45,68,.11),
-        0 5px 14px rgba(45,45,68,.075);
-      --ios-glass-pressed:rgba(81,81,111,.80);
-
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.085) 0%,
-          rgba(255,255,255,.02) 48%,
-          rgba(0,0,0,.02) 100%
-        ),
-        var(--ios-glass-surface);
-      color:var(--ios-glass-color);
-    }
-
-    .action.secondary{
-      --ios-glass-color:rgba(81,81,111,.94);
-    }
-
-    .action.danger{
-      --ios-glass-surface:rgba(249,214,228,.48);
-      --ios-glass-border:rgba(169,60,105,.18);
-      --ios-glass-color:#a93c69;
-      --ios-glass-shadow:
-        0 1px 1px rgba(150,50,95,.07),
-        0 5px 14px rgba(150,50,95,.035);
-      --ios-glass-pressed:rgba(247,198,218,.60);
-    }
-
-    .theme:active,
-    .controlbtn:not(.ghost-nav):active,
-    .subbtn:active,
-    .action:active,
-    .controlbtn:not(.ghost-nav).is-pressed,
-    .subbtn.is-pressed,
-    .action.is-pressed{
-      background:var(--ios-glass-pressed);
-      box-shadow:var(--ios-glass-pressed-shadow);
-    }
-
-    /* 長押し中も材質の輪郭は同じ。塗りの進行は既存の ::before を利用 */
-    #editMonth.is-secret-filling,
-    #editMonth.is-secret-filling:active{
-      border:1px solid var(--ios-glass-border);
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.12) 0%,
-          rgba(255,255,255,.035) 48%,
-          rgba(255,255,255,0) 100%
-        ),
-        var(--ios-glass-surface);
-      -webkit-backdrop-filter:blur(20px) saturate(120%);
-      backdrop-filter:blur(20px) saturate(120%);
-      box-shadow:var(--ios-glass-shadow);
-    }
-
-
-    /* v0.71 — 上下4〜5pxに滲む、やや強めの白ハイライト */
-    .theme,
-    .controlbtn:not(.ghost-nav),
-    .subbtn,
-    .action{
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.42) 0px,
-          rgba(255,255,255,.24) 2px,
-          rgba(255,255,255,.08) 5px,
-          rgba(255,255,255,0) 9px
-        ) top / 100% 10px no-repeat,
-        linear-gradient(
-          0deg,
-          rgba(255,255,255,.30) 0px,
-          rgba(255,255,255,.16) 2px,
-          rgba(255,255,255,.06) 5px,
-          rgba(255,255,255,0) 9px
-        ) bottom / 100% 10px no-repeat,
-        var(--ios-glass-surface);
-    }
-
-    .controlbtn.primary,
-    .action:not(.secondary):not(.danger){
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.26) 0px,
-          rgba(255,255,255,.15) 2px,
-          rgba(255,255,255,.05) 5px,
-          rgba(255,255,255,0) 9px
-        ) top / 100% 10px no-repeat,
-        linear-gradient(
-          0deg,
-          rgba(255,255,255,.20) 0px,
-          rgba(255,255,255,.11) 2px,
-          rgba(255,255,255,.04) 5px,
-          rgba(255,255,255,0) 9px
-        ) bottom / 100% 10px no-repeat,
-        var(--ios-glass-surface);
-    }
-
-    .theme:active,
-    .controlbtn:not(.ghost-nav):active,
-    .subbtn:active,
-    .action:active,
-    .controlbtn:not(.ghost-nav).is-pressed,
-    .subbtn.is-pressed,
-    .action.is-pressed{
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.30) 0px,
-          rgba(255,255,255,.16) 2px,
-          rgba(255,255,255,.05) 5px,
-          rgba(255,255,255,0) 9px
-        ) top / 100% 10px no-repeat,
-        linear-gradient(
-          0deg,
-          rgba(255,255,255,.22) 0px,
-          rgba(255,255,255,.11) 2px,
-          rgba(255,255,255,.04) 5px,
-          rgba(255,255,255,0) 9px
-        ) bottom / 100% 10px no-repeat,
-        var(--ios-glass-pressed);
-    }
-
-    #editMonth.is-secret-filling,
-    #editMonth.is-secret-filling:active{
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.42) 0px,
-          rgba(255,255,255,.24) 2px,
-          rgba(255,255,255,.08) 5px,
-          rgba(255,255,255,0) 9px
-        ) top / 100% 10px no-repeat,
-        linear-gradient(
-          0deg,
-          rgba(255,255,255,.30) 0px,
-          rgba(255,255,255,.16) 2px,
-          rgba(255,255,255,.06) 5px,
-          rgba(255,255,255,0) 9px
-        ) bottom / 100% 10px no-repeat,
-        var(--ios-glass-surface);
-    }
-
-    /* v0.72 — 有効色のシアン試作。文字の読みやすさを優先して濃紺にする */
-    :root{ --active-cyan:#2671EB; --active-cyan-ink:#37485C; }
-    .day.selected,
-    body.reading-open .day.selected,
-    body.edit-open .day.selected{
-      background:var(--active-cyan);
-      color:var(--active-cyan-ink);
-    }
-    .day.selected.sun,
-    .day.selected.holiday,
-    .day.selected.sat{
-      color:var(--active-cyan-ink);
-    }
-    .selected .moon{filter:none}
-
-    .controlbtn.primary,
-    .action:not(.secondary):not(.danger){
-      --ios-glass-surface:rgba(38,113,235,.84);
-      --ios-glass-border:rgba(55,120,138,.24);
-      --ios-glass-color:var(--active-cyan-ink);
-      --ios-glass-pressed:rgba(38,113,235,.94);
-      --ios-glass-shadow:
-        0 1px 1px rgba(55,100,118,.10),
-        0 5px 14px rgba(55,100,118,.07);
-      color:var(--active-cyan-ink);
-    }
-    body.reading-open .controlbtn.primary,
-    body.edit-open .controlbtn.primary{
-      background:rgba(38,113,235,.58);
-      color:var(--active-cyan-ink);
-    }
-
-
-    /* v0.75 — v0.73 を土台に、有効色だけ #6FE0FC へ。白文字で形は維持 */
-    :root{
-      --active-cyan:#6FE0FC;
-      --active-cyan-ink:#FFFFFF;
-    }
-
-    .day.selected,
-    body.reading-open .day.selected,
-    body.edit-open .day.selected{
-      background:var(--active-cyan);
-      color:#fff;
-      border-radius:4px;
-    }
-    .day.selected .day-number,
-    .day.selected .day-symbol,
-    .day.selected .moon{
-      color:#fff;
-    }
-    .day.selected.sun,
-    .day.selected.holiday,
-    .day.selected.sat{
-      color:#fff;
-    }
-    .selected .moon{ filter:none; }
-
-    .controlbtn.primary,
-    .action:not(.secondary):not(.danger){
-      --ios-glass-surface:rgba(111,224,252,.84);
-      --ios-glass-border:rgba(65,150,170,.24);
-      --ios-glass-color:#fff;
-      --ios-glass-pressed:rgba(111,224,252,.94);
-      --ios-glass-shadow:
-        0 1px 1px rgba(55,100,118,.10),
-        0 5px 14px rgba(55,100,118,.07);
-      color:#fff;
-    }
-
-    body.reading-open .controlbtn.primary,
-    body.edit-open .controlbtn.primary{
-      background:rgba(111,224,252,.58);
-      color:#fff;
-    }
-
-    .controlbtn.primary:active,
-    .action:not(.secondary):not(.danger):active,
-    .action:not(.secondary):not(.danger).is-pressed{
-      color:#fff;
-    }
-
-
-    /* v0.76 — 有効色ボタンの下半分に #65D4FC のニュアンスを追加 */
-    .controlbtn.primary,
-    .action:not(.secondary):not(.danger){
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.12) 0%,
-          rgba(255,255,255,.04) 28%,
-          rgba(255,255,255,0) 50%
-        ),
-        linear-gradient(
-          180deg,
-          #6FE0FC 0%,
-          #6FE0FC 50%,
-          #6BD9FC 72%,
-          #65D4FC 100%
-        );
-    }
-
-    body.reading-open .controlbtn.primary,
-    body.edit-open .controlbtn.primary{
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.10) 0%,
-          rgba(255,255,255,.03) 28%,
-          rgba(255,255,255,0) 50%
-        ),
-        linear-gradient(
-          180deg,
-          rgba(111,224,252,.78) 0%,
-          rgba(111,224,252,.78) 50%,
-          rgba(107,217,252,.72) 72%,
-          rgba(101,212,252,.72) 100%
-        );
-    }
-
-
-    /* v0.77 — 「今日」は押下しても色・反射・影を変えない。
-       共通の .is-pressed による縮小アニメーションだけ適用する。 */
-    #todayBtn{
-      --today-surface:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.12) 0%,
-          rgba(255,255,255,.04) 28%,
-          rgba(255,255,255,0) 50%
-        ),
-        linear-gradient(
-          180deg,
-          #6FE0FC 0%,
-          #6FE0FC 50%,
-          #6BD9FC 72%,
-          #65D4FC 100%
-        );
-      --today-shadow:var(--ios-glass-shadow);
-    }
-    #todayBtn,
-    #todayBtn:active,
-    #todayBtn.is-pressed,
-    body.reading-open #todayBtn,
-    body.edit-open #todayBtn,
-    body.reading-open #todayBtn:active,
-    body.edit-open #todayBtn:active,
-    body.reading-open #todayBtn.is-pressed,
-    body.edit-open #todayBtn.is-pressed{
-      background:var(--today-surface);
-      box-shadow:var(--today-shadow);
-      color:#fff;
-    }
-
-
-    /* v0.81: 青とピンクは共通材質。上下の薄い1px反射を復活し、Tintだけ変更。
-       ベース色は単色のまま。押下中も同じ面を保持する。 */
-    .controlbtn.primary,
-    .action:not(.secondary):not(.danger),
-    .action.danger{
-      --tinted-face:
-        /* 上下1pxの輪郭反射：左右端はゆっくり消して二重リングを避ける */
+      --glass-face:
         linear-gradient(90deg,
           transparent 0%,
-          rgba(255,255,255,.32) 12%,
-          rgba(255,255,255,.78) 36%,
-          rgba(255,255,255,.86) 50%,
-          rgba(255,255,255,.78) 64%,
-          rgba(255,255,255,.32) 88%,
+          rgba(255,255,255,.30) 22%,
+          rgba(255,255,255,.72) 50%,
+          rgba(255,255,255,.30) 78%,
           transparent 100%
         ) center top 1px / 88% 1px no-repeat,
         linear-gradient(90deg,
           transparent 0%,
-          rgba(255,255,255,.24) 12%,
-          rgba(255,255,255,.58) 38%,
-          rgba(255,255,255,.66) 50%,
-          rgba(255,255,255,.58) 62%,
-          rgba(255,255,255,.24) 88%,
+          rgba(255,255,255,.19) 22%,
+          rgba(255,255,255,.50) 50%,
+          rgba(255,255,255,.19) 78%,
           transparent 100%
         ) center bottom 1px / 88% 1px no-repeat,
-        /* 既存の4〜5pxの滲む反射はそのまま */
         linear-gradient(180deg,
           rgba(255,255,255,.42) 0px,
           rgba(255,255,255,.24) 2px,
           rgba(255,255,255,.08) 5px,
-          rgba(255,255,255,0) 9px
+          transparent 9px
         ) center top / 100% 10px no-repeat,
         linear-gradient(0deg,
           rgba(255,255,255,.30) 0px,
           rgba(255,255,255,.16) 2px,
           rgba(255,255,255,.06) 5px,
-          rgba(255,255,255,0) 9px
+          transparent 9px
         ) center bottom / 100% 10px no-repeat,
-        var(--tinted-base);
-      --ios-glass-border:rgba(169,60,105,.18);
-      --ios-glass-shadow:
-        0 1px 1px rgba(150,50,95,.07),
-        0 5px 14px rgba(150,50,95,.035);
-      --ios-glass-pressed-shadow:var(--ios-glass-shadow);
-      background:var(--tinted-face);
-      color:var(--tinted-ink);
-      box-shadow:var(--ios-glass-shadow);
-    }
-    .controlbtn.primary,
-    .action:not(.secondary):not(.danger){
-      --tinted-base:#6FE0FC;
-      --tinted-ink:#51516F;
-      /* エッジ・影の濃さはピンクと共通、色相だけ青に合わせる。 */
-      --ios-glass-border:rgba(58,128,150,.18);
-      --ios-glass-shadow:
-        0 1px 1px rgba(48,108,132,.07),
-        0 5px 14px rgba(48,108,132,.035);
-    }
-    .action.danger{
-      --tinted-base:#FCA7DD;
-      --tinted-ink:#8D285D;
+        var(--glass-tint);
+
+      border:1px solid var(--glass-border);
+      background:var(--glass-face);
+      color:var(--glass-ink);
+      box-shadow:var(--glass-shadow);
+      -webkit-backdrop-filter:blur(20px) saturate(120%);
+      backdrop-filter:blur(20px) saturate(120%);
     }
 
-    /* 旧押下色やモーダル表示中の上書きを無効化し、縮小のみ残す。 */
-    .controlbtn.primary:active,
-    .controlbtn.primary.is-pressed,
-    .action:not(.secondary):not(.danger):active,
-    .action:not(.secondary):not(.danger).is-pressed,
-    .action.danger:active,
-    .action.danger.is-pressed,
+    /* 色だけ変える。反射・輪郭・影・ぼかしは白と完全共通 */
+    .controlbtn.primary,
+    .action:not(.secondary):not(.danger){
+      --glass-tint:#6FE0FC;
+      --glass-ink:#51516F;
+    }
+    .action.danger{
+      --glass-tint:#FCA7DD;
+      --glass-ink:#8D285D;
+    }
+
+    /* 通常・押下・モーダル背後で材質を切り替えない。変化は既存の縮小のみ */
+    .theme:active,
+    .theme.is-theme-pressed,
+    .controlbtn:not(.ghost-nav):active,
+    .controlbtn:not(.ghost-nav).is-pressed,
+    .subbtn:active,
+    .subbtn.is-pressed,
+    .action:active,
+    .action.is-pressed,
     body.reading-open .controlbtn.primary,
-    body.edit-open .controlbtn.primary,
-    body.reading-open .controlbtn.primary:active,
-    body.edit-open .controlbtn.primary:active,
-    body.reading-open .controlbtn.primary.is-pressed,
-    body.edit-open .controlbtn.primary.is-pressed{
-      background:var(--tinted-face);
-      color:var(--tinted-ink);
-      box-shadow:var(--ios-glass-shadow);
+    body.edit-open .controlbtn.primary{
+      background:var(--glass-face);
+      color:var(--glass-ink);
+      border-color:var(--glass-border);
+      box-shadow:var(--glass-shadow);
     }
-    /* 今日ボタンの旧ID指定を上書き。形や配置には手を触れない。 */
-    #todayBtn,
-    #todayBtn:active,
-    #todayBtn.is-pressed,
-    body.reading-open #todayBtn,
-    body.edit-open #todayBtn,
-    body.reading-open #todayBtn:active,
-    body.edit-open #todayBtn:active,
-    body.reading-open #todayBtn.is-pressed,
-    body.edit-open #todayBtn.is-pressed{
-      background:var(--tinted-face);
-      color:var(--tinted-ink);
-      box-shadow:var(--ios-glass-shadow);
+    #editMonth.is-secret-filling,
+    #editMonth.is-secret-filling:active{
+      background:var(--glass-face);
+      color:var(--glass-ink);
+      border-color:var(--glass-border);
+      box-shadow:var(--glass-shadow);
+      -webkit-backdrop-filter:blur(20px) saturate(120%);
+      backdrop-filter:blur(20px) saturate(120%);
     }
+
+    /* 選択セルはボタン材質の対象外。従来の矩形と週末色表示を維持 */
+    .day.selected,
+    body.reading-open .day.selected,
+    body.edit-open .day.selected{
+      background:#6FE0FC;
+      color:#fff;
+      border-radius:4px;
+    }
+    .day.selected.sun,
+    .day.selected.holiday,
+    .day.selected.sat,
+    .day.selected .day-number,
+    .day.selected .day-symbol,
+    .day.selected .moon{
+      color:#fff;
+    }
+    .selected .moon{filter:none}
 
 </style>
 </head>
