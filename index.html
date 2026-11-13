@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.50 -->
+  <!-- pecoyomi v0.51 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -644,7 +644,7 @@
       text-transform:uppercase;
       color:var(--sub);
       margin:0 0 3px;
-      font-weight:700;
+      font-weight:600;
     }
     #readingDialog .section-title{
       font-size:25px;
@@ -657,7 +657,8 @@
     #readingDialog .section-rule{
       width:100%;
       height:1px;
-      margin-top:9px;
+      /* descender（g / y / Q など）の余白を残しつつ、見出しの塊を締める */
+      margin-top:2px;
       background:var(--separator);
     }
     #readingDialog .prose{
