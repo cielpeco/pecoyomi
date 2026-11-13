@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.57 -->
+  <!-- pecoyomi v0.58 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -109,6 +109,37 @@
       opacity:1;
       transition:opacity 100ms ease-out;
     }
+
+    /* 起動中の描画を覆う軽量スプラッシュ。背景は既存の空色をそのまま見せる。 */
+    #bootSplash{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      display:grid;
+      place-items:center;
+      background:var(--app-background);
+      background-size:100% 100%;
+      opacity:1;
+      visibility:visible;
+      transition:opacity 280ms ease-out, visibility 0s linear 280ms;
+      pointer-events:auto;
+    }
+    #bootSplash.is-dismissed{
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+    }
+    #bootSplash .boot-wordmark{
+      color:var(--accent);
+      font-size:25px;
+      font-weight:650;
+      letter-spacing:.09em;
+      opacity:.82;
+    }
+    @media (prefers-reduced-motion:reduce){
+      #bootSplash{transition:none}
+    }
+
     .swipe-region{
       /*
         縦レイアウトは
@@ -984,6 +1015,8 @@
   </style>
 </head>
 <body>
+  <div id="bootSplash" aria-label="pecoyomi 起動中"><div class="boot-wordmark">pecoyomi</div></div>
+
   <main class="app">
     <div class="month-number-bg" id="monthNumberBg">11</div>
     <section class="swipe-region" id="monthSwipeRegion" aria-label="月切り替え領域">
@@ -2049,12 +2082,57 @@
 
   render();
 
-  // 初回カレンダー・本文・レイアウトが確定してからUIを一度だけ表示。
-  requestAnimationFrame(()=>{
-    requestAnimationFrame(()=>{
-      document.querySelector('.app')?.classList.add('is-boot-ready');
-    });
-  });
+  // iOS PWA起動時は viewport / safe-area が数フレーム遅れて安定することがある。
+  // スプラッシュで途中の再配置を覆い、寸法が連続して安定してから外す。
+  (() => {
+    const app=document.querySelector('.app');
+    const splash=document.getElementById('bootSplash');
+    let lastSignature='';
+    let stableFrames=0;
+    let frameCount=0;
+    const started=performance.now();
+
+    const finish=()=>{
+      app?.classList.add('is-boot-ready');
+      // アプリが描画されるフレームを挟んでからフタを外す。
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        splash?.classList.add('is-dismissed');
+        splash?.addEventListener('transitionend',()=>{
+          splash.remove();
+        },{once:true});
+      }));
+    };
+
+    const waitForStableLayout=()=>{
+      frameCount++;
+      const viewport=window.visualViewport;
+      const rect=app.getBoundingClientRect();
+      const calendar=document.querySelector('.calendar')?.getBoundingClientRect();
+      const footer=document.querySelector('.subcontrols')?.getBoundingClientRect();
+      // 0.5px単位で丸め、サブピクセルの微細な揺れは無視する。
+      const round=v=>Math.round(v*2)/2;
+      const signature=[
+        round(window.innerHeight),
+        round(viewport?.height ?? window.innerHeight),
+        round(viewport?.offsetTop ?? 0),
+        round(rect.top),round(rect.height),
+        round(calendar?.top ?? 0),
+        round(footer?.bottom ?? 0)
+      ].join('|');
+      stableFrames=signature===lastSignature ? stableFrames+1 : 0;
+      lastSignature=signature;
+
+      // 最低約250ms待ち、8フレーム安定したら表示。
+      // 環境によって安定判定できなくても最大1.2秒で必ず解除する。
+      const elapsed=performance.now()-started;
+      if((elapsed>=250 && stableFrames>=8) || elapsed>=1200 || frameCount>=90){
+        finish();
+      }else{
+        requestAnimationFrame(waitForStableLayout);
+      }
+    };
+    requestAnimationFrame(waitForStableLayout);
+  })();
 })();
 </script>
 </body>
