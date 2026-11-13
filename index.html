@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.88 -->
+  <!-- pecoyomi v0.89 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -372,7 +372,7 @@
     }
     .day-symbol{
       position:absolute;
-      top:calc(100% + 4px);
+      top:calc(100% + 2px);
       left:50%;
       transform:translateX(-50%);
       display:block;
@@ -408,8 +408,15 @@
       font-weight:400;
       border-radius:4px;
     }
+    /* v0.89 — 月相記号はセル角ではなく日付数字の近くへグルーピング */
     .moon{
-      position:absolute;right:3px;top:2px;font-size:8px;line-height:1
+      position:absolute;
+      left:calc(50% + 15px);
+      top:-7px;
+      right:auto;
+      font-size:8px;
+      line-height:1;
+      pointer-events:none;
     }
     .selected .moon{filter:grayscale(1) brightness(3)}
     .sun{color:#b04b4b}
@@ -1158,7 +1165,7 @@
     }
     .day.selected .day-number{
       font-weight:400;
-      transform:scale(1.28);
+      transform:scale(1.40);
     }
     .day.selected .day-symbol{
       visibility:hidden;
@@ -1592,7 +1599,7 @@
       if (data?.newMoon?.day===d && data.newMoon.month===state.viewMonth) moon += '<span class="moon">●</span>';
       if (data?.fullMoon?.day===d && data.fullMoon.month===state.viewMonth) moon += '<span class="moon">○</span>';
       const symbol = data?.days?.[d]?.card || '';
-      btn.innerHTML = `<span class="day-anchor"><span class="day-number">${d}</span><span class="day-symbol">${escapeHtml(symbol)}</span></span>${moon}`;
+      btn.innerHTML = `<span class="day-anchor"><span class="day-number">${d}</span><span class="day-symbol">${escapeHtml(symbol)}</span>${moon}</span>`;
       btn.setAttribute('aria-label', `${state.viewMonth}月${d}日${symbol ? '、'+symbol : ''}`);
       btn.addEventListener('click',()=>{state.selectedDay=d;render();});
       root.appendChild(btn);
