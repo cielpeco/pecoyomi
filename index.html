@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.53 -->
+  <!-- pecoyomi v0.54 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -98,10 +98,16 @@
       isolation:isolate;
     }
     .swipe-region{
-      flex:1 1 auto;
+      /*
+        縦レイアウトは
+        Theme（固定） + Daily（残り全部）
+        の2段。Calendarはこの直後の固定ブロック。
+        Unityなら縦Layout + DailyだけFlexible Height=1のイメージ。
+      */
+      flex:1 1 0;
       min-height:0;
-      display:flex;
-      flex-direction:column;
+      display:grid;
+      grid-template-rows:auto minmax(0,1fr);
       gap:10px;
       touch-action:pan-y;
       will-change:transform;
@@ -168,14 +174,12 @@
     .daily{
       background:transparent;
       border-radius:0;
-      /* 上下を同値にして、テーマ側 / カレンダー側の呼吸を揃える */
       padding:8px 4px;
       box-shadow:none;
-      min-height:150px;
-      flex:1 1 auto;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-start;
+      /* Gridの中段いっぱいをDaily領域として確保 */
+      min-height:0;
+      height:100%;
+      display:block;
       overflow:hidden;
       position:relative;
       isolation:isolate;
@@ -184,10 +188,8 @@
     .daily-inner{
       position:relative;
       z-index:1;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-start;
-      flex:1 1 auto;
+      width:100%;
+      height:100%;
       min-height:0;
       overflow:hidden;
     }
@@ -356,7 +358,7 @@
       .app{gap:7px}
       .swipe-region{gap:7px}
       .day{min-height:42px;gap:2px}
-      .daily{min-height:105px;padding:6px 4px}
+      .daily{min-height:0;padding:6px 4px}
       .month-number-bg{font-size:186px;left:calc(14.2857% + 10px);bottom:356px;transform:translateX(-50%);width:1.42em}
       .daily-card{margin-top:14px}
     }
