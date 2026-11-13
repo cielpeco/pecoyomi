@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.82 -->
+  <!-- pecoyomi v0.83 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1097,6 +1097,38 @@
       color:#fff;
     }
     .selected .moon{filter:none}
+
+
+    /* v0.83 — 色と押下状態の最終整合 */
+
+    /* 削除ボタンはベース色を #FCA7DD に固定。
+       古い .action.danger:active より詳細度を上げて、
+       押下時も同じガラス面を維持する。 */
+    .action.danger{
+      --glass-tint:#FCA7DD;
+      --glass-ink:#8D285D;
+      background:var(--glass-face);
+      color:var(--glass-ink);
+    }
+    .action.danger:active,
+    .action.danger.is-pressed{
+      background:var(--glass-face);
+      color:var(--glass-ink);
+      border-color:var(--glass-border);
+      box-shadow:var(--glass-shadow);
+    }
+
+    /* 「月を追加 / 編集」長押しで広がる塗りを、
+       有効ボタンと同じ #6FE0FC に変更。 */
+    #editMonth::before{
+      background:#6FE0FC;
+      box-shadow:none;
+      -webkit-backdrop-filter:none;
+      backdrop-filter:none;
+    }
+    #editMonth.is-secret-filling .edit-month-label{
+      color:#51516F;
+    }
 
 </style>
 </head>
