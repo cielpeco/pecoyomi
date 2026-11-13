@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.43 -->
+  <!-- pecoyomi v0.44 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -658,6 +658,43 @@
     #readingDialog .prose{
       font-size:15px;
       line-height:1.85;
+    }
+
+    /* 月テーマ：アプリ起動後、最初に開いた1回だけ項目を順番にふわっと入場 */
+    #readingDialog.first-entrance .reading-head-copy,
+    #readingDialog.first-entrance #readingBody > .section,
+    #readingDialog.first-entrance #readingBody > .empty{
+      opacity:0;
+      transform:translateY(9px);
+      will-change:opacity,transform;
+    }
+    #readingDialog.first-entrance.is-visible .reading-head-copy,
+    #readingDialog.first-entrance.is-visible #readingBody > .section,
+    #readingDialog.first-entrance.is-visible #readingBody > .empty{
+      animation:readingItemEntrance 420ms cubic-bezier(.22,.78,.24,1) both;
+      animation-delay:var(--entrance-delay,70ms);
+    }
+    @keyframes readingItemEntrance{
+      from{
+        opacity:0;
+        transform:translateY(9px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+    @media (prefers-reduced-motion:reduce){
+      #readingDialog.first-entrance .reading-head-copy,
+      #readingDialog.first-entrance #readingBody > .section,
+      #readingDialog.first-entrance #readingBody > .empty,
+      #readingDialog.first-entrance.is-visible .reading-head-copy,
+      #readingDialog.first-entrance.is-visible #readingBody > .section,
+      #readingDialog.first-entrance.is-visible #readingBody > .empty{
+        opacity:1;
+        transform:none;
+        animation:none;
+      }
     }
 
     /* 追加 / 編集：月テーマ詳細と同じ、枠なしのガラスレイヤー */
@@ -1360,6 +1397,10 @@
 
   const DIALOG_FADE_MS = 120;
 
+  // 月テーマの段階入場は、このページ起動中の最初の1回だけ。
+  let readingEntrancePlayed = false;
+  let readingEntranceTimer = null;
+
   function fadeInDialog(dlg){
     dlg.classList.remove('is-visible');
     dlg.showModal();
@@ -1400,6 +1441,35 @@
       `;
     }
     const dlg=$('readingDialog');
+
+    // 全体のフェードは毎回。中身の段階入場は起動後の初回だけ。
+    if(readingEntranceTimer){
+      window.clearTimeout(readingEntranceTimer);
+      readingEntranceTimer=null;
+    }
+    const isFirstEntrance=!readingEntrancePlayed;
+    dlg.classList.toggle('first-entrance',isFirstEntrance);
+
+    if(isFirstEntrance){
+      readingEntrancePlayed=true;
+      const entranceItems=[
+        dlg.querySelector('.reading-head-copy'),
+        ...dlg.querySelectorAll('#readingBody > .section, #readingBody > .empty')
+      ].filter(Boolean);
+
+      entranceItems.forEach((el,index)=>{
+        el.style.setProperty('--entrance-delay',`${70 + index * 70}ms`);
+      });
+
+      // 入場が終わったら通常状態に戻し、以後の開閉では項目を動かさない。
+      const entranceEnd=70 + Math.max(0,entranceItems.length - 1) * 70 + 420 + 60;
+      readingEntranceTimer=window.setTimeout(()=>{
+        dlg.classList.remove('first-entrance');
+        entranceItems.forEach(el=>el.style.removeProperty('--entrance-delay'));
+        readingEntranceTimer=null;
+      },entranceEnd);
+    }
+
     document.body.classList.add('reading-open');
     fadeInDialog(dlg);
   }
