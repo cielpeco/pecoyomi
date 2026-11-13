@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.77 -->
+  <!-- pecoyomi v0.78 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1508,6 +1508,72 @@
       background:var(--today-surface);
       box-shadow:var(--today-shadow);
       color:#fff;
+    }
+
+
+    /* v0.78 — 有効色のボタンにも白ガラス同等の上下ぼかし反射。
+       背景は押下時に交換せず、縮小アニメーションだけを見せる。 */
+    .controlbtn.primary,
+    .action:not(.secondary):not(.danger){
+      --active-glass-face:
+        linear-gradient(180deg,
+          rgba(255,255,255,.42) 0px,
+          rgba(255,255,255,.24) 2px,
+          rgba(255,255,255,.08) 5px,
+          rgba(255,255,255,0) 9px
+        ) center top / 100% 10px no-repeat,
+        linear-gradient(0deg,
+          rgba(255,255,255,.30) 0px,
+          rgba(255,255,255,.16) 2px,
+          rgba(255,255,255,.06) 5px,
+          rgba(255,255,255,0) 9px
+        ) center bottom / 100% 10px no-repeat,
+        linear-gradient(180deg,
+          #6FE0FC 0%,
+          #6FE0FC 50%,
+          #6BD9FC 72%,
+          #65D4FC 100%
+        );
+      background:var(--active-glass-face);
+      color:#fff;
+    }
+    .controlbtn.primary:active,
+    .controlbtn.primary.is-pressed,
+    .action:not(.secondary):not(.danger):active,
+    .action:not(.secondary):not(.danger).is-pressed,
+    body.reading-open .controlbtn.primary,
+    body.edit-open .controlbtn.primary,
+    body.reading-open .controlbtn.primary:active,
+    body.edit-open .controlbtn.primary:active,
+    body.reading-open .controlbtn.primary.is-pressed,
+    body.edit-open .controlbtn.primary.is-pressed{
+      background:var(--active-glass-face);
+      color:#fff;
+    }
+
+    /* 削除ボタン：#FCA7DDを基調に、同じガラスの上下反射を適用 */
+    .action.danger{
+      --danger-glass-face:
+        linear-gradient(180deg,
+          rgba(255,255,255,.42) 0px,
+          rgba(255,255,255,.24) 2px,
+          rgba(255,255,255,.08) 5px,
+          rgba(255,255,255,0) 9px
+        ) center top / 100% 10px no-repeat,
+        linear-gradient(0deg,
+          rgba(255,255,255,.30) 0px,
+          rgba(255,255,255,.16) 2px,
+          rgba(255,255,255,.06) 5px,
+          rgba(255,255,255,0) 9px
+        ) center bottom / 100% 10px no-repeat,
+        #FCA7DD;
+      background:var(--danger-glass-face);
+      color:#8D285D;
+    }
+    .action.danger:active,
+    .action.danger.is-pressed{
+      background:var(--danger-glass-face);
+      color:#8D285D;
     }
 
 </style>
