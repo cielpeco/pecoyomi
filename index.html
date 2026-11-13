@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.80 -->
+  <!-- pecoyomi v0.81 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1511,12 +1511,32 @@
     }
 
 
-    /* v0.80: 青とピンクは完全に同じガラス材質、Tintだけを変更。
-       下側の青グラデーション・追加の1pxエッジ線は撤去する。 */
+    /* v0.81: 青とピンクは共通材質。上下の薄い1px反射を復活し、Tintだけ変更。
+       ベース色は単色のまま。押下中も同じ面を保持する。 */
     .controlbtn.primary,
     .action:not(.secondary):not(.danger),
     .action.danger{
       --tinted-face:
+        /* 上下1pxの輪郭反射：左右端はゆっくり消して二重リングを避ける */
+        linear-gradient(90deg,
+          transparent 0%,
+          rgba(255,255,255,.32) 12%,
+          rgba(255,255,255,.78) 36%,
+          rgba(255,255,255,.86) 50%,
+          rgba(255,255,255,.78) 64%,
+          rgba(255,255,255,.32) 88%,
+          transparent 100%
+        ) center top 1px / 88% 1px no-repeat,
+        linear-gradient(90deg,
+          transparent 0%,
+          rgba(255,255,255,.24) 12%,
+          rgba(255,255,255,.58) 38%,
+          rgba(255,255,255,.66) 50%,
+          rgba(255,255,255,.58) 62%,
+          rgba(255,255,255,.24) 88%,
+          transparent 100%
+        ) center bottom 1px / 88% 1px no-repeat,
+        /* 既存の4〜5pxの滲む反射はそのまま */
         linear-gradient(180deg,
           rgba(255,255,255,.42) 0px,
           rgba(255,255,255,.24) 2px,
