@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.44 -->
+  <!-- pecoyomi v0.45 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -671,15 +671,23 @@
     #readingDialog.first-entrance.is-visible .reading-head-copy,
     #readingDialog.first-entrance.is-visible #readingBody > .section,
     #readingDialog.first-entrance.is-visible #readingBody > .empty{
-      animation:readingItemEntrance 420ms cubic-bezier(.22,.78,.24,1) both;
+      animation:readingItemEntrance 680ms cubic-bezier(.22,.72,.24,1) both;
       animation-delay:var(--entrance-delay,70ms);
     }
     @keyframes readingItemEntrance{
-      from{
+      0%{
         opacity:0;
         transform:translateY(9px);
       }
-      to{
+      48%{
+        opacity:.68;
+        transform:translateY(0);
+      }
+      72%{
+        opacity:.84;
+        transform:translateY(0);
+      }
+      100%{
         opacity:1;
         transform:translateY(0);
       }
@@ -1397,8 +1405,9 @@
 
   const DIALOG_FADE_MS = 120;
 
-  // 月テーマの段階入場は、このページ起動中の最初の1回だけ。
-  let readingEntrancePlayed = false;
+  // 月テーマの段階入場は、このページ起動中「その月を最初に開いた1回だけ」。
+  // 月を跨げば再生し、いったん見た月へ戻った場合は再生しない。
+  const readingEntrancePlayedMonths = new Set();
   let readingEntranceTimer = null;
 
   function fadeInDialog(dlg){
@@ -1442,16 +1451,18 @@
     }
     const dlg=$('readingDialog');
 
-    // 全体のフェードは毎回。中身の段階入場は起動後の初回だけ。
+    // 全体のフェードは毎回。中身の段階入場は「起動中、その月の初回」だけ。
     if(readingEntranceTimer){
       window.clearTimeout(readingEntranceTimer);
       readingEntranceTimer=null;
     }
-    const isFirstEntrance=!readingEntrancePlayed;
+
+    const entranceMonthKey=keyOf(state.viewYear,state.viewMonth);
+    const isFirstEntrance=!readingEntrancePlayedMonths.has(entranceMonthKey);
     dlg.classList.toggle('first-entrance',isFirstEntrance);
 
     if(isFirstEntrance){
-      readingEntrancePlayed=true;
+      readingEntrancePlayedMonths.add(entranceMonthKey);
       const entranceItems=[
         dlg.querySelector('.reading-head-copy'),
         ...dlg.querySelectorAll('#readingBody > .section, #readingBody > .empty')
@@ -1461,8 +1472,8 @@
         el.style.setProperty('--entrance-delay',`${70 + index * 70}ms`);
       });
 
-      // 入場が終わったら通常状態に戻し、以後の開閉では項目を動かさない。
-      const entranceEnd=70 + Math.max(0,entranceItems.length - 1) * 70 + 420 + 60;
+      // 動きは先に着地し、その後に濃さが満ちる余韻まで含めて待つ。
+      const entranceEnd=70 + Math.max(0,entranceItems.length - 1) * 70 + 680 + 70;
       readingEntranceTimer=window.setTimeout(()=>{
         dlg.classList.remove('first-entrance');
         entranceItems.forEach(el=>el.style.removeProperty('--entrance-delay'));
