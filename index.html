@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.47 -->
+  <!-- pecoyomi v0.48 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -663,8 +663,10 @@
     /* 月テーマ：起動中、その月を最初に開いた1回だけ項目をしっとり入場 */
     #readingDialog.first-entrance .entrance-pending{
       opacity:0;
-      transform:translateY(9px);
+      transform:translate3d(0,4px,0);
       will-change:opacity,transform;
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
     }
     #readingDialog.first-entrance.is-visible .entrance-pending.entrance-visible{
       animation:readingItemEntrance 1360ms cubic-bezier(.22,.68,.24,1) both;
@@ -672,19 +674,19 @@
     @keyframes readingItemEntrance{
       0%{
         opacity:0;
-        transform:translateY(9px);
+        transform:translate3d(0,4px,0);
       }
-      45%{
-        opacity:.54;
-        transform:translateY(2px);
+      32%{
+        opacity:.46;
+        transform:translate3d(0,0,0);
       }
-      75%{
-        opacity:.82;
-        transform:translateY(0);
+      68%{
+        opacity:.80;
+        transform:translate3d(0,0,0);
       }
       100%{
         opacity:1;
-        transform:translateY(0);
+        transform:translate3d(0,0,0);
       }
     }
     @media (prefers-reduced-motion:reduce){
@@ -1538,15 +1540,17 @@
     const body=$('readingBody');
     const entranceMonthKey=keyOf(state.viewYear,state.viewMonth);
 
-    // 別の月へ跨いで開いた場合は、前の月のスクロール位置を引き継がず必ず先頭へ。
-    if(lastReadingMonthKey!==entranceMonthKey){
+    clearReadingEntrance(dlg);
+
+    const isFirstEntrance=!readingEntrancePlayedMonths.has(entranceMonthKey);
+
+    // その月の初回表示は、前回どこまで読んでいても必ず一番上から。
+    // showModal前と表示直後の両方で0を入れて、iOS側のスクロール位置復元も抑える。
+    if(isFirstEntrance || lastReadingMonthKey!==entranceMonthKey){
       body.scrollTop=0;
     }
     lastReadingMonthKey=entranceMonthKey;
 
-    clearReadingEntrance(dlg);
-
-    const isFirstEntrance=!readingEntrancePlayedMonths.has(entranceMonthKey);
     dlg.classList.toggle('first-entrance',isFirstEntrance);
     if(isFirstEntrance){
       readingEntrancePlayedMonths.add(entranceMonthKey);
@@ -1560,9 +1564,17 @@
     document.body.classList.add('reading-open');
     fadeInDialog(dlg);
 
-    if(isFirstEntrance){
+    if(isFirstEntrance || lastReadingMonthKey===entranceMonthKey){
       requestAnimationFrame(()=>{
-        requestAnimationFrame(()=>startReadingEntrance(dlg));
+        if(isFirstEntrance){
+          body.scrollTop=0;
+        }
+        requestAnimationFrame(()=>{
+          if(isFirstEntrance){
+            body.scrollTop=0;
+            startReadingEntrance(dlg);
+          }
+        });
       });
     }
   }
