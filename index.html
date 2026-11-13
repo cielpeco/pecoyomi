@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.83 -->
+  <!-- pecoyomi v0.84 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1128,6 +1128,29 @@
     }
     #editMonth.is-secret-filling .edit-month-label{
       color:#51516F;
+    }
+
+
+    /* v0.84 — 選択中の日付は数字を主役にする */
+    .day.selected,
+    body.reading-open .day.selected,
+    body.edit-open .day.selected{
+      display:grid;
+      place-items:center;
+      padding:0;
+    }
+
+    .day.selected .day-symbol{
+      display:none;
+    }
+
+    .day.selected .day-number{
+      font-size:19px;
+      line-height:1;
+      font-weight:800;
+      text-align:center;
+      align-self:center;
+      justify-self:center;
     }
 
 </style>
