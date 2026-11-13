@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.67 -->
+  <!-- pecoyomi v0.68 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1063,6 +1063,115 @@
         0 1px 2px rgba(70,60,50,.105),
         inset 0 1px 0 rgba(255,255,255,.90),
         inset 0 -1px 0 rgba(255,255,255,.54);
+    }
+
+    /* v0.68: メイン画面を基準に、全ボタンの「ガラス材質」を共通化
+       サイズ・配置・色の役割だけ各ボタン側で差分を持たせる */
+    .theme,
+    .controlbtn:not(.ghost-nav),
+    .subbtn,
+    .action{
+      --glass-bg:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.33) 0%,
+          rgba(255,255,255,.16) 48%,
+          rgba(255,255,255,.09) 100%
+        );
+      --glass-color:rgba(81,81,111,.94);
+      --glass-shadow:
+        0 7px 18px rgba(70,60,50,.055),
+        0 1px 2px rgba(70,60,50,.075),
+        inset 0 1px 0 rgba(255,255,255,.92),
+        inset 0 -1px 0 rgba(255,255,255,.56);
+      --glass-active-bg:rgba(255,255,255,.29);
+      --glass-active-shadow:
+        0 2px 8px rgba(70,60,50,.06),
+        0 1px 2px rgba(70,60,50,.07),
+        inset 0 1px 0 rgba(255,255,255,.65),
+        inset 0 -1px 0 rgba(255,255,255,.34);
+
+      border:1px solid transparent;
+      background:var(--glass-bg);
+      color:var(--glass-color);
+      -webkit-backdrop-filter:blur(12px) saturate(112%);
+      backdrop-filter:blur(12px) saturate(112%);
+      box-shadow:var(--glass-shadow);
+    }
+
+    /* 紺ガラス：Today と編集画面の主要アクションで同じ材質・同じTint */
+    .controlbtn.primary,
+    .action:not(.secondary):not(.danger){
+      --glass-bg:
+        linear-gradient(
+          180deg,
+          rgba(118,118,151,.88) 0%,
+          rgba(81,81,111,.80) 45%,
+          rgba(72,72,101,.84) 100%
+        );
+      --glass-color:#fff;
+      --glass-shadow:
+        0 7px 18px rgba(55,55,82,.12),
+        0 1px 2px rgba(48,48,72,.12),
+        inset 0 1px 0 rgba(255,255,255,.68),
+        inset 0 -1px 0 rgba(255,255,255,.34);
+      --glass-active-bg:rgba(81,81,111,.86);
+      --glass-active-shadow:
+        0 2px 8px rgba(55,55,82,.10),
+        0 1px 2px rgba(48,48,72,.10),
+        inset 0 1px 0 rgba(255,255,255,.46),
+        inset 0 -1px 0 rgba(255,255,255,.24);
+    }
+
+    /* 白ガラス：編集画面の secondary もメイン画面と同じ材質 */
+    .action.secondary{
+      --glass-color:rgba(81,81,111,.94);
+    }
+
+    /* danger は色だけ変え、反射・blur・影の構造は共通 */
+    .action.danger{
+      --glass-bg:
+        linear-gradient(
+          180deg,
+          rgba(255,230,241,.90) 0%,
+          rgba(250,205,224,.80) 48%,
+          rgba(245,193,216,.76) 100%
+        );
+      --glass-color:#a93c69;
+      --glass-shadow:
+        0 7px 18px rgba(170,60,105,.08),
+        0 1px 2px rgba(150,50,95,.10),
+        inset 0 1px 0 rgba(255,255,255,.82),
+        inset 0 -1px 0 rgba(255,255,255,.42);
+      --glass-active-bg:rgba(247,188,214,.92);
+      --glass-active-shadow:
+        0 2px 8px rgba(170,60,105,.07),
+        0 1px 2px rgba(150,50,95,.08),
+        inset 0 1px 0 rgba(255,255,255,.62),
+        inset 0 -1px 0 rgba(255,255,255,.30);
+    }
+
+    /* 押下中も全画面で同じ「材質の潰れ方」に統一 */
+    .theme:active,
+    .controlbtn:not(.ghost-nav):active,
+    .subbtn:active,
+    .action:active,
+    .controlbtn:not(.ghost-nav).is-pressed,
+    .subbtn.is-pressed,
+    .action.is-pressed{
+      background:var(--glass-active-bg);
+      box-shadow:var(--glass-active-shadow);
+    }
+
+    /* 月テーマは寸法だけ独自。材質は上の共通値を使う */
+    .theme{
+      min-height:62px;
+    }
+
+    /* 長押し中も外周の材質は共通。中央の塗り演出は ::before 側を維持 */
+    #editMonth.is-secret-filling,
+    #editMonth.is-secret-filling:active{
+      box-shadow:var(--glass-shadow);
     }
   </style>
 </head>
