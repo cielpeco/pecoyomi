@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.79 -->
+  <!-- pecoyomi v0.80 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1511,22 +1511,12 @@
     }
 
 
-    /* v0.78 — 有効色のボタンにも白ガラス同等の上下ぼかし反射。
-       背景は押下時に交換せず、縮小アニメーションだけを見せる。 */
+    /* v0.80: 青とピンクは完全に同じガラス材質、Tintだけを変更。
+       下側の青グラデーション・追加の1pxエッジ線は撤去する。 */
     .controlbtn.primary,
-    .action:not(.secondary):not(.danger){
-      --active-glass-face:
-        /* 1pxの上下エッジ反射。端に向けて弱め、丸い輪郭は強調しない */
-        linear-gradient(90deg,
-          transparent 0%, rgba(255,255,255,.65) 15%,
-          rgba(255,255,255,.86) 50%, rgba(255,255,255,.65) 85%,
-          transparent 100%
-        ) center top 1px / 92% 1px no-repeat,
-        linear-gradient(90deg,
-          transparent 0%, rgba(255,255,255,.48) 15%,
-          rgba(255,255,255,.68) 50%, rgba(255,255,255,.48) 85%,
-          transparent 100%
-        ) center bottom 1px / 92% 1px no-repeat,
+    .action:not(.secondary):not(.danger),
+    .action.danger{
+      --tinted-face:
         linear-gradient(180deg,
           rgba(255,255,255,.42) 0px,
           rgba(255,255,255,.24) 2px,
@@ -1539,55 +1529,61 @@
           rgba(255,255,255,.06) 5px,
           rgba(255,255,255,0) 9px
         ) center bottom / 100% 10px no-repeat,
-        linear-gradient(180deg,
-          #6FE0FC 0%,
-          #6FE0FC 50%,
-          #6BD9FC 72%,
-          #65D4FC 100%
-        );
-      background:var(--active-glass-face);
-      color:#fff;
+        var(--tinted-base);
+      --ios-glass-border:rgba(169,60,105,.18);
+      --ios-glass-shadow:
+        0 1px 1px rgba(150,50,95,.07),
+        0 5px 14px rgba(150,50,95,.035);
+      --ios-glass-pressed-shadow:var(--ios-glass-shadow);
+      background:var(--tinted-face);
+      color:var(--tinted-ink);
+      box-shadow:var(--ios-glass-shadow);
     }
+    .controlbtn.primary,
+    .action:not(.secondary):not(.danger){
+      --tinted-base:#6FE0FC;
+      --tinted-ink:#51516F;
+      /* エッジ・影の濃さはピンクと共通、色相だけ青に合わせる。 */
+      --ios-glass-border:rgba(58,128,150,.18);
+      --ios-glass-shadow:
+        0 1px 1px rgba(48,108,132,.07),
+        0 5px 14px rgba(48,108,132,.035);
+    }
+    .action.danger{
+      --tinted-base:#FCA7DD;
+      --tinted-ink:#8D285D;
+    }
+
+    /* 旧押下色やモーダル表示中の上書きを無効化し、縮小のみ残す。 */
     .controlbtn.primary:active,
     .controlbtn.primary.is-pressed,
     .action:not(.secondary):not(.danger):active,
     .action:not(.secondary):not(.danger).is-pressed,
+    .action.danger:active,
+    .action.danger.is-pressed,
     body.reading-open .controlbtn.primary,
     body.edit-open .controlbtn.primary,
     body.reading-open .controlbtn.primary:active,
     body.edit-open .controlbtn.primary:active,
     body.reading-open .controlbtn.primary.is-pressed,
     body.edit-open .controlbtn.primary.is-pressed{
-      background:var(--active-glass-face);
-      color:#fff;
+      background:var(--tinted-face);
+      color:var(--tinted-ink);
+      box-shadow:var(--ios-glass-shadow);
     }
-
-    /* 今日ボタンも同じ反射材質を参照。押下中は縮小のみ。 */
-    #todayBtn{ --today-surface:var(--active-glass-face); }
-
-    /* 削除ボタン：#FCA7DDを基調に、同じガラスの上下反射を適用 */
-    .action.danger{
-      --danger-glass-face:
-        linear-gradient(180deg,
-          rgba(255,255,255,.42) 0px,
-          rgba(255,255,255,.24) 2px,
-          rgba(255,255,255,.08) 5px,
-          rgba(255,255,255,0) 9px
-        ) center top / 100% 10px no-repeat,
-        linear-gradient(0deg,
-          rgba(255,255,255,.30) 0px,
-          rgba(255,255,255,.16) 2px,
-          rgba(255,255,255,.06) 5px,
-          rgba(255,255,255,0) 9px
-        ) center bottom / 100% 10px no-repeat,
-        #FCA7DD;
-      background:var(--danger-glass-face);
-      color:#8D285D;
-    }
-    .action.danger:active,
-    .action.danger.is-pressed{
-      background:var(--danger-glass-face);
-      color:#8D285D;
+    /* 今日ボタンの旧ID指定を上書き。形や配置には手を触れない。 */
+    #todayBtn,
+    #todayBtn:active,
+    #todayBtn.is-pressed,
+    body.reading-open #todayBtn,
+    body.edit-open #todayBtn,
+    body.reading-open #todayBtn:active,
+    body.edit-open #todayBtn:active,
+    body.reading-open #todayBtn.is-pressed,
+    body.edit-open #todayBtn.is-pressed{
+      background:var(--tinted-face);
+      color:var(--tinted-ink);
+      box-shadow:var(--ios-glass-shadow);
     }
 
 </style>
