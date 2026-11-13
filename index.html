@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.85 -->
+  <!-- pecoyomi v0.88 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -353,10 +353,30 @@
       padding:4px 1px 3px;
       min-width:0;
     }
-    .day-number{font-size:14px;line-height:1.1}
-    .day-symbol{
-      display:block;
+    /* v0.86 — 日付の基準位置を固定し、シンボルはその下へぶら下げる */
+    .day-anchor{
+      position:relative;
+      display:grid;
+      place-items:center;
       width:100%;
+      height:14px;
+      line-height:1;
+      pointer-events:none;
+    }
+    .day-number{
+      display:block;
+      font-size:14px;
+      line-height:1;
+      font-weight:400;
+      text-align:center;
+    }
+    .day-symbol{
+      position:absolute;
+      top:calc(100% + 4px);
+      left:50%;
+      transform:translateX(-50%);
+      display:block;
+      width:calc(100% - 2px);
       text-align:center;
       white-space:nowrap;
       overflow:hidden;
@@ -375,17 +395,17 @@
       .daily-card{margin-top:14px}
     }
     .day.blank{visibility:hidden}
-    .day.registered{font-weight:600}
+    .day.registered{font-weight:400}
     .day.today:not(.selected){
       background:var(--panel);
       box-shadow:0 1px 5px rgba(0,0,0,.05);
       border-radius:4px;
-      font-weight:800;
+      font-weight:400;
     }
     .day.selected{
       background:var(--accent);
       color:white;
-      font-weight:800;
+      font-weight:400;
       border-radius:4px;
     }
     .moon{
@@ -1131,26 +1151,17 @@
     }
 
 
-    /* v0.84 — 選択中の日付は数字を主役にする */
-    .day.selected,
-    body.reading-open .day.selected,
-    body.edit-open .day.selected{
-      display:grid;
-      place-items:center;
-      padding:0;
+    /* v0.88 — 選択中もレイアウトは固定。数字だけtransformで拡大し、シンボルは非表示 */
+    .day-number{
+      transform:scale(1);
+      transform-origin:center center;
     }
-
-    .day.selected .day-symbol{
-      display:none;
-    }
-
     .day.selected .day-number{
-      font-size:19px;
-      line-height:1;
-      font-weight:600;
-      text-align:center;
-      align-self:center;
-      justify-self:center;
+      font-weight:400;
+      transform:scale(1.28);
+    }
+    .day.selected .day-symbol{
+      visibility:hidden;
     }
 
 </style>
@@ -1581,7 +1592,7 @@
       if (data?.newMoon?.day===d && data.newMoon.month===state.viewMonth) moon += '<span class="moon">●</span>';
       if (data?.fullMoon?.day===d && data.fullMoon.month===state.viewMonth) moon += '<span class="moon">○</span>';
       const symbol = data?.days?.[d]?.card || '';
-      btn.innerHTML = `<span class="day-number">${d}</span><span class="day-symbol">${escapeHtml(symbol)}</span>${moon}`;
+      btn.innerHTML = `<span class="day-anchor"><span class="day-number">${d}</span><span class="day-symbol">${escapeHtml(symbol)}</span></span>${moon}`;
       btn.setAttribute('aria-label', `${state.viewMonth}月${d}日${symbol ? '、'+symbol : ''}`);
       btn.addEventListener('click',()=>{state.selectedDay=d;render();});
       root.appendChild(btn);
