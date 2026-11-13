@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.69 -->
+  <!-- pecoyomi v0.70 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1172,7 +1172,102 @@
     #editMonth.is-secret-filling:active{
       box-shadow:var(--glass-shadow);
     }
-  </style>
+  
+    /* v0.70 — iPhone下部UIを基準にした、静かな半透明ガラス */
+    .theme,
+    .controlbtn:not(.ghost-nav),
+    .subbtn,
+    .action{
+      --ios-glass-surface:rgba(255,255,255,.16);
+      --ios-glass-border:rgba(82,78,74,.23);
+      --ios-glass-color:rgba(81,81,111,.94);
+      --ios-glass-shadow:
+        0 1px 1px rgba(55,50,45,.055),
+        0 5px 14px rgba(55,50,45,.035);
+      --ios-glass-pressed:rgba(255,255,255,.23);
+      --ios-glass-pressed-shadow:
+        0 1px 1px rgba(55,50,45,.05),
+        0 2px 7px rgba(55,50,45,.025);
+
+      border:1px solid var(--ios-glass-border);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.12) 0%,
+          rgba(255,255,255,.035) 48%,
+          rgba(255,255,255,0) 100%
+        ),
+        var(--ios-glass-surface);
+      color:var(--ios-glass-color);
+      -webkit-backdrop-filter:blur(20px) saturate(120%);
+      backdrop-filter:blur(20px) saturate(120%);
+      box-shadow:var(--ios-glass-shadow);
+    }
+
+    .controlbtn.primary,
+    .action:not(.secondary):not(.danger){
+      --ios-glass-surface:rgba(81,81,111,.72);
+      --ios-glass-border:rgba(62,62,84,.30);
+      --ios-glass-color:#fff;
+      --ios-glass-shadow:
+        0 1px 1px rgba(45,45,68,.11),
+        0 5px 14px rgba(45,45,68,.075);
+      --ios-glass-pressed:rgba(81,81,111,.80);
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.085) 0%,
+          rgba(255,255,255,.02) 48%,
+          rgba(0,0,0,.02) 100%
+        ),
+        var(--ios-glass-surface);
+      color:var(--ios-glass-color);
+    }
+
+    .action.secondary{
+      --ios-glass-color:rgba(81,81,111,.94);
+    }
+
+    .action.danger{
+      --ios-glass-surface:rgba(249,214,228,.48);
+      --ios-glass-border:rgba(169,60,105,.18);
+      --ios-glass-color:#a93c69;
+      --ios-glass-shadow:
+        0 1px 1px rgba(150,50,95,.07),
+        0 5px 14px rgba(150,50,95,.035);
+      --ios-glass-pressed:rgba(247,198,218,.60);
+    }
+
+    .theme:active,
+    .controlbtn:not(.ghost-nav):active,
+    .subbtn:active,
+    .action:active,
+    .controlbtn:not(.ghost-nav).is-pressed,
+    .subbtn.is-pressed,
+    .action.is-pressed{
+      background:var(--ios-glass-pressed);
+      box-shadow:var(--ios-glass-pressed-shadow);
+    }
+
+    /* 長押し中も材質の輪郭は同じ。塗りの進行は既存の ::before を利用 */
+    #editMonth.is-secret-filling,
+    #editMonth.is-secret-filling:active{
+      border:1px solid var(--ios-glass-border);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.12) 0%,
+          rgba(255,255,255,.035) 48%,
+          rgba(255,255,255,0) 100%
+        ),
+        var(--ios-glass-surface);
+      -webkit-backdrop-filter:blur(20px) saturate(120%);
+      backdrop-filter:blur(20px) saturate(120%);
+      box-shadow:var(--ios-glass-shadow);
+    }
+
+</style>
 </head>
 <body>
   <div id="bootSplash" aria-label="起動中"></div>
