@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.58 -->
+  <!-- pecoyomi v0.59 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -110,31 +110,21 @@
       transition:opacity 100ms ease-out;
     }
 
-    /* 起動中の描画を覆う軽量スプラッシュ。背景は既存の空色をそのまま見せる。 */
+    /* 起動時のレイアウト確定を隠す、装飾なしの白いフタ。 */
     #bootSplash{
       position:fixed;
       inset:0;
       z-index:9999;
-      display:grid;
-      place-items:center;
-      background:var(--app-background);
-      background-size:100% 100%;
+      background:#fff;
       opacity:1;
       visibility:visible;
-      transition:opacity 280ms ease-out, visibility 0s linear 280ms;
       pointer-events:auto;
+      transition:opacity 220ms ease-out, visibility 0s linear 220ms;
     }
     #bootSplash.is-dismissed{
       opacity:0;
       visibility:hidden;
       pointer-events:none;
-    }
-    #bootSplash .boot-wordmark{
-      color:var(--accent);
-      font-size:25px;
-      font-weight:650;
-      letter-spacing:.09em;
-      opacity:.82;
     }
     @media (prefers-reduced-motion:reduce){
       #bootSplash{transition:none}
@@ -1015,7 +1005,7 @@
   </style>
 </head>
 <body>
-  <div id="bootSplash" aria-label="pecoyomi 起動中"><div class="boot-wordmark">pecoyomi</div></div>
+  <div id="bootSplash" aria-label="起動中"></div>
 
   <main class="app">
     <div class="month-number-bg" id="monthNumberBg">11</div>
