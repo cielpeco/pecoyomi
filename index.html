@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.71 -->
+  <!-- pecoyomi v0.72 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1354,6 +1354,38 @@
           rgba(255,255,255,0) 9px
         ) bottom / 100% 10px no-repeat,
         var(--ios-glass-surface);
+    }
+
+    /* v0.72 — 有効色のシアン試作。文字の読みやすさを優先して濃紺にする */
+    :root{ --active-cyan:#A4F6FC; --active-cyan-ink:#37485C; }
+    .day.selected,
+    body.reading-open .day.selected,
+    body.edit-open .day.selected{
+      background:var(--active-cyan);
+      color:var(--active-cyan-ink);
+    }
+    .day.selected.sun,
+    .day.selected.holiday,
+    .day.selected.sat{
+      color:var(--active-cyan-ink);
+    }
+    .selected .moon{filter:none}
+
+    .controlbtn.primary,
+    .action:not(.secondary):not(.danger){
+      --ios-glass-surface:rgba(164,246,252,.84);
+      --ios-glass-border:rgba(55,120,138,.24);
+      --ios-glass-color:var(--active-cyan-ink);
+      --ios-glass-pressed:rgba(164,246,252,.94);
+      --ios-glass-shadow:
+        0 1px 1px rgba(55,100,118,.10),
+        0 5px 14px rgba(55,100,118,.07);
+      color:var(--active-cyan-ink);
+    }
+    body.reading-open .controlbtn.primary,
+    body.edit-open .controlbtn.primary{
+      background:rgba(164,246,252,.58);
+      color:var(--active-cyan-ink);
     }
 
 </style>
