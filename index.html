@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.42 -->
+  <!-- pecoyomi v0.43 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -17,6 +17,8 @@
       --ink:rgba(28,28,30,.92);
       /* 補助文字は同じ黒を透過。背景グラデーションを自然に拾う */
       --sub:rgba(28,28,30,.54);
+      /* 水平線は背景色に引っぱられないニュートラルグレー */
+      --separator:#B8B8BC;
       --line:#ded8d1;
       /* 選択・主要アクションの基準色 */
       --accent:#51516F;
@@ -222,7 +224,7 @@
     .moon-reading{
       margin-top:14px;
       padding-top:12px;
-      border-top:1px solid var(--sub);
+      border-top:1px solid var(--separator);
       text-align:center;
     }
     .moon-label{
@@ -646,7 +648,7 @@
       width:100%;
       height:1px;
       margin-top:7px;
-      background:var(--sub);
+      background:var(--separator);
     }
     #readingDialog .section .lead{
       font-size:19px;
