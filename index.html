@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.74 -->
+  <!-- pecoyomi v0.75 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -170,7 +170,7 @@
     body.reading-open .day.selected,
     body.edit-open .day.selected{
       background:rgba(81,81,111,.50);
-      color:#fff;
+      color:rgba(255,255,255,.96);
     }
     body.reading-open #editMonth::before,
     body.edit-open #editMonth::before{
@@ -384,7 +384,7 @@
     }
     .day.selected{
       background:var(--accent);
-      color:#fff;
+      color:white;
       font-weight:800;
       border-radius:4px;
     }
@@ -397,7 +397,10 @@
     .sat{color:#4c69a2}
     .day.selected.sun,
     .day.selected.holiday,
-    .day.selected.sat{color:#fff;
+    .day.selected.sat{color:white}
+
+    .controls{
+      flex:0 0 auto;
       display:grid;
       grid-template-columns:1fr 1.15fr 1fr;
       gap:7px;
@@ -1354,26 +1357,26 @@
     }
 
     /* v0.72 — 有効色のシアン試作。文字の読みやすさを優先して濃紺にする */
-    :root{ --active-cyan:#34D0F7; --active-cyan-ink:#37485C; }
+    :root{ --active-cyan:#2671EB; --active-cyan-ink:#37485C; }
     .day.selected,
     body.reading-open .day.selected,
     body.edit-open .day.selected{
       background:var(--active-cyan);
-      color:#fff;
+      color:var(--active-cyan-ink);
     }
     .day.selected.sun,
     .day.selected.holiday,
     .day.selected.sat{
-      color:#fff;
+      color:var(--active-cyan-ink);
     }
     .selected .moon{filter:none}
 
     .controlbtn.primary,
     .action:not(.secondary):not(.danger){
-      --ios-glass-surface:rgba(52,208,247,.84);
+      --ios-glass-surface:rgba(38,113,235,.84);
       --ios-glass-border:rgba(55,120,138,.24);
-      --ios-glass-color:#fff;
-      --ios-glass-pressed:rgba(52,208,247,.94);
+      --ios-glass-color:var(--active-cyan-ink);
+      --ios-glass-pressed:rgba(38,113,235,.94);
       --ios-glass-shadow:
         0 1px 1px rgba(55,100,118,.10),
         0 5px 14px rgba(55,100,118,.07);
@@ -1381,24 +1384,58 @@
     }
     body.reading-open .controlbtn.primary,
     body.edit-open .controlbtn.primary{
-      background:rgba(52,208,247,.58);
-      color:#fff;
+      background:rgba(38,113,235,.58);
+      color:var(--active-cyan-ink);
     }
 
 
-    /* v0.74 — 明るいシアン寄りブルーに変更し、その面上の文字は白へ */
+    /* v0.75 — v0.73 を土台に、有効色だけ #6FE0FC へ。白文字で形は維持 */
+    :root{
+      --active-cyan:#6FE0FC;
+      --active-cyan-ink:#FFFFFF;
+    }
+
+    .day.selected,
+    body.reading-open .day.selected,
+    body.edit-open .day.selected{
+      background:var(--active-cyan);
+      color:#fff;
+      border-radius:4px;
+    }
+    .day.selected .day-number,
+    .day.selected .day-symbol,
+    .day.selected .moon{
+      color:#fff;
+    }
+    .day.selected.sun,
+    .day.selected.holiday,
+    .day.selected.sat{
+      color:#fff;
+    }
+    .selected .moon{ filter:none; }
+
     .controlbtn.primary,
     .action:not(.secondary):not(.danger){
+      --ios-glass-surface:rgba(111,224,252,.84);
+      --ios-glass-border:rgba(65,150,170,.24);
+      --ios-glass-color:#fff;
+      --ios-glass-pressed:rgba(111,224,252,.94);
+      --ios-glass-shadow:
+        0 1px 1px rgba(55,100,118,.10),
+        0 5px 14px rgba(55,100,118,.07);
       color:#fff;
     }
 
-    .daybtn.is-selected,
-    .daybtn.selected,
-    .calendar-day.is-selected,
-    .calendar-day.selected,
-    .selected-day,
-    .is-today-selected{
-      color:#fff !important;
+    body.reading-open .controlbtn.primary,
+    body.edit-open .controlbtn.primary{
+      background:rgba(111,224,252,.58);
+      color:#fff;
+    }
+
+    .controlbtn.primary:active,
+    .action:not(.secondary):not(.danger):active,
+    .action:not(.secondary):not(.danger).is-pressed{
+      color:#fff;
     }
 
 </style>
