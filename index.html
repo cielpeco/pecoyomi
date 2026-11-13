@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.54 -->
+  <!-- pecoyomi v0.55 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -258,7 +258,8 @@
     .calendar{
       background:transparent;
       border-radius:0;
-      padding:8px 2px 4px;
+      /* カレンダー見出し前の見えない余白を削る */
+      padding:0 2px 4px;
       box-shadow:none;
       flex:0 0 auto;
       position:relative;
@@ -315,7 +316,9 @@
       align-items:flex-end;
       justify-content:flex-start;
       margin:0 0 4px;
-      min-height:34px;
+      /* 以前の34px固定が上側に大きな空白を作っていたので内容高に追従 */
+      min-height:0;
+      height:auto;
     }
     .calendar-month{
       font-size:12px;
