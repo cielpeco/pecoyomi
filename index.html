@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.00 -->
+  <!-- pecoyomi v1.01 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -826,25 +826,56 @@
       100%{opacity:1;}
     }
 
-    /* v1.00 — 大見出しは位置を動かさず、左→右へマスク解除 */
-    #readingDialog.first-entrance .section.entrance-pending .section-title{
-      -webkit-clip-path:inset(0 100% 0 0);
-      clip-path:inset(0 100% 0 0);
-      will-change:clip-path;
+    /* v1.01 — 見出しは文字数に依存しない固定テンポの背景ワイプで入場 */
+    #readingDialog .section-title{
+      position:relative;
+      display:block;
+      overflow:hidden;
+      isolation:isolate;
     }
+
+    #readingDialog.first-entrance .section.entrance-pending .section-title{
+      color:transparent;
+    }
+
+    #readingDialog.first-entrance .section.entrance-pending .section-title::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(111,224,252,.08) 0%,
+          rgba(111,224,252,.24) 45%,
+          rgba(255,255,255,.42) 72%,
+          rgba(111,224,252,.10) 100%
+        );
+      transform:translateX(-105%);
+      will-change:transform;
+    }
+
     #readingDialog.first-entrance.is-visible
       .section.entrance-pending.entrance-visible .section-title{
-      animation:readingTitleMaskReveal 760ms cubic-bezier(.20,.72,.24,1) 90ms both;
+      animation:readingTitleTextAppear 980ms linear 70ms both;
     }
-    @keyframes readingTitleMaskReveal{
-      0%{
-        -webkit-clip-path:inset(0 100% 0 0);
-        clip-path:inset(0 100% 0 0);
-      }
-      100%{
-        -webkit-clip-path:inset(0 0 0 0);
-        clip-path:inset(0 0 0 0);
-      }
+
+    #readingDialog.first-entrance.is-visible
+      .section.entrance-pending.entrance-visible .section-title::after{
+      animation:readingTitleWipe 980ms cubic-bezier(.22,.70,.26,1) 70ms both;
+    }
+
+    @keyframes readingTitleWipe{
+      0%{transform:translateX(-105%);}
+      42%{transform:translateX(0%);}
+      58%{transform:translateX(0%);}
+      100%{transform:translateX(105%);}
+    }
+
+    @keyframes readingTitleTextAppear{
+      0%,72%{color:transparent;}
+      73%,100%{color:var(--ink);}
     }
     @media (prefers-reduced-motion:reduce){
       #readingDialog.first-entrance .entrance-pending,
@@ -855,8 +886,13 @@
       #readingDialog.first-entrance .section.entrance-pending .section-title,
       #readingDialog.first-entrance.is-visible
         .section.entrance-pending.entrance-visible .section-title{
-        -webkit-clip-path:none;
-        clip-path:none;
+        color:var(--ink);
+        animation:none;
+      }
+      #readingDialog.first-entrance .section.entrance-pending .section-title::after,
+      #readingDialog.first-entrance.is-visible
+        .section.entrance-pending.entrance-visible .section-title::after{
+        display:none;
         animation:none;
       }
     }
