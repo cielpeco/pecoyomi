@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.98 -->
+  <!-- pecoyomi v0.99 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -554,7 +554,7 @@
     }
     .subbtn{min-height:42px;font-size:13px;color:rgba(81,81,111,.94)}
 
-    /* 月を追加 / 編集：長押しで裏メニューへ。0.5秒後から中央塗りを0.7秒表示 */
+    /* リーディングを追加 / 編集：長押しで裏メニューへ。0.5秒後から中央塗りを0.7秒表示 */
     #editMonth{
       position:relative;
       overflow:hidden;
@@ -1239,7 +1239,7 @@
       box-shadow:var(--glass-shadow);
     }
 
-    /* 「月を追加 / 編集」長押しで広がる塗りを、
+    /* 「リーディングを追加 / 編集」長押しで広がる塗りを、
        有効ボタンと同じ #6FE0FC に変更。 */
     /* v0.95 — 長押し色はガラスの中でにじむ。輪郭はぼかし、反射はその上に残す */
     #editMonth::before{
@@ -1332,7 +1332,7 @@
     <section class="swipe-region" id="monthSwipeRegion" aria-label="月切り替え領域">
       <button class="theme" id="themeButton" type="button">
         <div class="theme-main">
-          <div class="eyebrow">今月のテーマ</div>
+          <div class="eyebrow">MONTHLY THEME</div>
           <div class="theme-title" id="themeTitle">マンスリー未登録</div>
         </div>
       </button>
@@ -1341,7 +1341,7 @@
         <div class="daily-inner">
           <div id="dailyEmpty" class="empty">
             この月のマンスリーはまだ登録されていません。<br>
-            下の「月を追加 / 編集」から原文を貼り付けてね。
+            下の「リーディングを追加 / 編集」から原文を貼り付けてね。
           </div>
           <div id="dailyContent" class="hidden">
             <div class="daily-card" id="dailyCard"></div>
@@ -1369,7 +1369,7 @@
     </nav>
 
     <div class="subcontrols">
-      <button class="subbtn" id="editMonth"><span class="edit-month-label">月を追加 / 編集</span></button>
+      <button class="subbtn" id="editMonth"><span class="edit-month-label">リーディングを追加 / 編集</span></button>
       <button class="hidden" id="backupBtn" aria-hidden="true" tabindex="-1">バックアップ</button>
     </div>
   </main>
@@ -1391,7 +1391,7 @@
       <div class="modal-head">
         <div class="edit-head-copy">
           <div class="edit-eyebrow-spacer" aria-hidden="true">spacer</div>
-          <h2>マンスリーを追加 / 編集</h2>
+          <h2>リーディングを追加 / 編集</h2>
         </div>
       </div>
       <div class="modal-body">
@@ -1698,7 +1698,7 @@
       $('dailyEmpty').classList.remove('hidden');
       $('dailyEmpty').innerHTML = data
         ? `${d}日のリーディングは未登録です。`
-        : `この月のマンスリーはまだ登録されていません。<br>下の「月を追加 / 編集」から原文を貼り付けてね。`;
+        : `この月のマンスリーはまだ登録されていません。<br>下の「リーディングを追加 / 編集」から原文を貼り付けてね。`;
       return;
     }
     $('dailyEmpty').classList.add('hidden');
@@ -2090,7 +2090,7 @@
       const btn=$('editMonth');
       btn?.classList.remove('is-secret-filling');
       const label=btn?.querySelector('.edit-month-label');
-      if(label) label.textContent='月を追加 / 編集';
+      if(label) label.textContent='リーディングを追加 / 編集';
     });
   }
 
@@ -2340,12 +2340,12 @@
     closeEditor();
   });
 
-  // 「月を追加 / 編集」の裏メニュー：
+  // 「リーディングを追加 / 編集」の裏メニュー：
   // 0.5秒ホールドで進捗開始 → 中央から0.7秒かけて塗り切る → バックアップを開く。
   (() => {
     const btn = $('editMonth');
     const label = btn.querySelector('.edit-month-label');
-    const normalLabel = '月を追加 / 編集';
+    const normalLabel = 'リーディングを追加 / 編集';
     const backupLabel = 'バックアップ';
     let holdTimer = null;
     let fillTimer = null;
