@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.04 -->
+  <!-- pecoyomi v1.05 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -819,6 +819,33 @@
     #readingDialog.first-entrance.is-visible .entrance-pending.entrance-visible{
       animation:readingItemEntrance 1000ms cubic-bezier(.22,.68,.24,1) both;
     }
+
+    /* v1.05 — section全体のopacityから見出しワイプを分離。
+       白帯は常に100%で描画し、本文側だけ従来どおりフェードする。 */
+    #readingDialog.first-entrance .section.entrance-pending{
+      opacity:1;
+      will-change:auto;
+    }
+    #readingDialog.first-entrance.is-visible
+      .section.entrance-pending.entrance-visible{
+      animation:none;
+    }
+
+    #readingDialog.first-entrance .section.entrance-pending .section-kicker,
+    #readingDialog.first-entrance .section.entrance-pending .section-rule,
+    #readingDialog.first-entrance .section.entrance-pending .prose{
+      opacity:0;
+      will-change:opacity;
+    }
+
+    #readingDialog.first-entrance.is-visible
+      .section.entrance-pending.entrance-visible .section-kicker,
+    #readingDialog.first-entrance.is-visible
+      .section.entrance-pending.entrance-visible .section-rule,
+    #readingDialog.first-entrance.is-visible
+      .section.entrance-pending.entrance-visible .prose{
+      animation:readingItemEntrance 1000ms cubic-bezier(.22,.68,.24,1) both;
+    }
     @keyframes readingItemEntrance{
       0%{opacity:0;}
       32%{opacity:.46;}
@@ -892,6 +919,12 @@
       #readingDialog.first-entrance.is-visible
         .section.entrance-pending.entrance-visible .section-title{
         color:var(--ink);
+        animation:none;
+      }
+      #readingDialog.first-entrance .section.entrance-pending .section-kicker,
+      #readingDialog.first-entrance .section.entrance-pending .section-rule,
+      #readingDialog.first-entrance .section.entrance-pending .prose{
+        opacity:1;
         animation:none;
       }
       #readingDialog.first-entrance .section.entrance-pending .section-title::after,
