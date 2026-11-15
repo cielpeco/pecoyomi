@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.07 -->
+  <!-- pecoyomi v1.08 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -853,7 +853,7 @@
       100%{opacity:1;}
     }
 
-    /* v1.06 — Safari安定化：文字と白帯を実DOMの別レイヤーとして独立描画 */
+    /* v1.08 — 背景帯を廃止。見出し文字だけを左→右へやわらかく描画 */
     #readingDialog .section-title{
       position:relative;
       display:block;
@@ -865,53 +865,61 @@
       position:relative;
       z-index:1;
       display:inline-block;
+      color:var(--ink);
     }
 
     #readingDialog .section-title-wipe{
-      position:absolute;
-      top:0;
-      bottom:0;
-      left:0;
-      width:46%;
-      z-index:2;
-      pointer-events:none;
-      background:
-        linear-gradient(
-          90deg,
-          rgba(255,255,255,0) 0%,
-          rgba(255,255,255,.20) 18%,
-          rgba(255,255,255,.46) 50%,
-          rgba(255,255,255,.20) 82%,
-          rgba(255,255,255,0) 100%
-        );
-      opacity:1;
-      transform:translate3d(-120%,0,0);
-      will-change:transform;
+      display:none;
     }
 
     #readingDialog.first-entrance
       .section.entrance-pending .section-title-text{
       opacity:0;
+      -webkit-mask-image:linear-gradient(
+        90deg,
+        #000 0%,
+        #000 30%,
+        transparent 40%,
+        transparent 100%
+      );
+      mask-image:linear-gradient(
+        90deg,
+        #000 0%,
+        #000 30%,
+        transparent 40%,
+        transparent 100%
+      );
+      -webkit-mask-size:300% 100%;
+      mask-size:300% 100%;
+      -webkit-mask-position:100% 0;
+      mask-position:100% 0;
+      -webkit-mask-repeat:no-repeat;
+      mask-repeat:no-repeat;
+      will-change:opacity,mask-position;
     }
 
     #readingDialog.first-entrance.is-visible
       .section.entrance-pending.entrance-visible .section-title-text{
-      animation:readingTitleTextAppear 720ms linear 40ms both;
+      animation:readingTitleSoftReveal 820ms cubic-bezier(.22,.66,.30,1) 50ms both;
     }
 
-    #readingDialog.first-entrance.is-visible
-      .section.entrance-pending.entrance-visible .section-title-wipe{
-      animation:readingTitleWipe 720ms cubic-bezier(.32,.02,.30,1) 40ms both;
-    }
-
-    @keyframes readingTitleWipe{
-      0%{transform:translate3d(-120%,0,0);}
-      100%{transform:translate3d(330%,0,0);}
-    }
-
-    @keyframes readingTitleTextAppear{
-      0%,54%{opacity:0;}
-      72%,100%{opacity:1;}
+    @keyframes readingTitleSoftReveal{
+      0%{
+        opacity:0;
+        -webkit-mask-position:100% 0;
+        mask-position:100% 0;
+      }
+      34%{
+        opacity:.45;
+      }
+      72%{
+        opacity:.88;
+      }
+      100%{
+        opacity:1;
+        -webkit-mask-position:0% 0;
+        mask-position:0% 0;
+      }
     }
     @media (prefers-reduced-motion:reduce){
       #readingDialog.first-entrance .entrance-pending,
@@ -923,6 +931,8 @@
       #readingDialog.first-entrance.is-visible
         .section.entrance-pending.entrance-visible .section-title-text{
         opacity:1;
+        -webkit-mask-image:none;
+        mask-image:none;
         animation:none;
       }
       #readingDialog.first-entrance .section.entrance-pending .section-kicker,
