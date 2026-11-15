@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.11 -->
+  <!-- pecoyomi v1.12 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -387,12 +387,211 @@
       height:auto;
     }
     .calendar-month{
+      -webkit-appearance:none;
+      appearance:none;
+      border:0;
+      padding:0;
+      margin:0;
+      background:transparent;
+      box-shadow:none;
+      border-radius:0;
+      font:inherit;
       font-size:12px;
       font-weight:700;
       letter-spacing:.08em;
       color:var(--sub);
       text-transform:uppercase;
       text-align:left;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .calendar-month:focus,
+    .calendar-month:focus-visible{outline:none}
+
+    /* v1.12 — 年月ジャンプ。登録済みの年月だけをiOS風リールで選ぶ */
+    #monthJumpDialog{
+      width:100vw;
+      height:100dvh;
+      max-width:none;
+      max-height:none;
+      margin:0;
+      padding:0;
+      border:0;
+      background:transparent;
+      overflow:hidden;
+      color:var(--ink);
+    }
+    #monthJumpDialog::backdrop{
+      background:rgba(28,24,28,.18);
+      -webkit-backdrop-filter:blur(2px);
+      backdrop-filter:blur(2px);
+      opacity:0;
+      transition:opacity 140ms ease-out;
+    }
+    #monthJumpDialog.is-visible::backdrop{opacity:1}
+    .month-jump-sheet{
+      position:absolute;
+      left:12px;
+      right:12px;
+      bottom:max(12px, env(safe-area-inset-bottom));
+      max-width:520px;
+      margin:0 auto;
+      padding:10px 12px 14px;
+      border:1px solid rgba(255,255,255,.58);
+      border-radius:24px;
+      background:rgba(255,255,255,.64);
+      -webkit-backdrop-filter:blur(24px) saturate(112%);
+      backdrop-filter:blur(24px) saturate(112%);
+      box-shadow:
+        0 18px 50px rgba(52,46,44,.14),
+        inset 0 1px 0 rgba(255,255,255,.92);
+      opacity:0;
+      transform:translate3d(0,18px,0);
+      transition:
+        transform 180ms cubic-bezier(.22,.74,.28,1),
+        opacity 150ms ease-out;
+    }
+    #monthJumpDialog.is-visible .month-jump-sheet{
+      opacity:1;
+      transform:translate3d(0,0,0);
+    }
+    .month-jump-actions{
+      height:38px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 2px;
+    }
+    .month-jump-icon{
+      -webkit-appearance:none;
+      appearance:none;
+      width:34px;
+      height:34px;
+      border:0;
+      border-radius:50%;
+      padding:0;
+      background:rgba(255,255,255,.34);
+      color:rgba(81,81,111,.78);
+      font-size:20px;
+      line-height:1;
+      font-weight:400;
+      display:grid;
+      place-items:center;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.80),
+        0 2px 8px rgba(70,60,50,.045);
+      -webkit-tap-highlight-color:transparent;
+    }
+    .month-jump-apply{
+      background:rgba(111,224,252,.58);
+      color:rgba(81,81,111,.92);
+      font-size:18px;
+      font-weight:700;
+    }
+    .month-jump-icon:focus,
+    .month-jump-icon:focus-visible{outline:none}
+    .month-jump-reel{
+      --jump-row:42px;
+      position:relative;
+      display:grid;
+      grid-template-columns:58px 54px minmax(0,1fr);
+      gap:8px;
+      height:210px;
+      padding:0 8px;
+      overflow:hidden;
+      isolation:isolate;
+    }
+    .month-jump-selection{
+      position:absolute;
+      left:6px;
+      right:6px;
+      top:50%;
+      height:var(--jump-row);
+      transform:translateY(-50%);
+      border-radius:12px;
+      background:rgba(81,81,111,.070);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.62),
+        inset 0 -1px 0 rgba(81,81,111,.035);
+      pointer-events:none;
+      z-index:0;
+    }
+    .month-jump-wheel{
+      position:relative;
+      z-index:1;
+      height:210px;
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch;
+      scroll-snap-type:y mandatory;
+      scrollbar-width:none;
+      padding:84px 0;
+      touch-action:pan-y;
+      -webkit-mask-image:linear-gradient(
+        to bottom,
+        transparent 0,
+        rgba(0,0,0,.28) 17%,
+        #000 37%,
+        #000 63%,
+        rgba(0,0,0,.28) 83%,
+        transparent 100%
+      );
+      mask-image:linear-gradient(
+        to bottom,
+        transparent 0,
+        rgba(0,0,0,.28) 17%,
+        #000 37%,
+        #000 63%,
+        rgba(0,0,0,.28) 83%,
+        transparent 100%
+      );
+    }
+    .month-jump-wheel::-webkit-scrollbar{display:none}
+    .month-jump-option{
+      -webkit-appearance:none;
+      appearance:none;
+      width:100%;
+      height:var(--jump-row);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:0;
+      padding:0;
+      background:transparent;
+      color:var(--sub);
+      font-size:15px;
+      line-height:1;
+      font-weight:400;
+      font-variant-numeric:tabular-nums;
+      scroll-snap-align:center;
+      scroll-snap-stop:always;
+      opacity:.42;
+      transition:opacity 100ms ease-out,color 100ms ease-out;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .month-jump-option.is-selected{
+      color:var(--ink);
+      opacity:1;
+      font-weight:600;
+    }
+    .month-jump-option:focus,
+    .month-jump-option:focus-visible{outline:none}
+    .month-jump-theme{
+      position:relative;
+      z-index:1;
+      align-self:center;
+      min-width:0;
+      height:var(--jump-row);
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      overflow:hidden;
+      white-space:nowrap;
+      color:var(--ink);
+      font-size:14px;
+      line-height:1;
+      font-weight:600;
+      letter-spacing:-.015em;
+      padding-left:2px;
     }
     .weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
     .weekdays div{
@@ -1489,7 +1688,7 @@
 
     <section class="calendar">
       <div class="calendar-header">
-        <div class="calendar-month" id="monthTitle">NOVEMBER 2026</div>
+        <button class="calendar-month" id="monthTitle" type="button" aria-haspopup="dialog" aria-controls="monthJumpDialog">NOVEMBER 2026</button>
       </div>
       <div class="weekdays">
         <div class="sun">SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div class="sat">SAT</div>
@@ -1566,6 +1765,21 @@
             <input id="importInput" type="file" accept="application/json,.json" hidden>
           </label>
         </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="monthJumpDialog">
+    <div class="month-jump-sheet" role="document" aria-label="年月ジャンプ">
+      <div class="month-jump-actions">
+        <button class="month-jump-icon" id="monthJumpCancel" type="button" aria-label="閉じる">×</button>
+        <button class="month-jump-icon month-jump-apply" id="monthJumpApply" type="button" aria-label="この年月へ移動">✓</button>
+      </div>
+      <div class="month-jump-reel">
+        <div class="month-jump-selection" aria-hidden="true"></div>
+        <div class="month-jump-wheel year-wheel" id="monthJumpYearWheel" aria-label="年"></div>
+        <div class="month-jump-wheel month-wheel" id="monthJumpMonthWheel" aria-label="月"></div>
+        <div class="month-jump-theme" id="monthJumpTheme" aria-live="polite"></div>
       </div>
     </div>
   </dialog>
@@ -1688,6 +1902,12 @@
     const parts=[lenormand,loa].filter(Boolean).map(escapeHtml);
     if(parts.length<=1) return parts[0] || '';
     return `${parts[0]} <span class="theme-separator">×</span> ${parts.slice(1).join(' <span class="theme-separator">×</span> ')}`;
+  }
+
+  function renderThemeNameCompact(lenormand='', loa=''){
+    const parts=[lenormand,loa].filter(Boolean).map(escapeHtml);
+    if(parts.length<=1) return parts[0] || '';
+    return `${parts[0]}<span class="theme-separator">×</span>${parts.slice(1).join('<span class="theme-separator">×</span>')}`;
   }
 
   function extractSections(raw){
@@ -2274,7 +2494,7 @@
           btn.classList.remove('is-label-fading');
           editMonthFeedbackTimers=[];
         },140));
-      },1000));
+      },3000));
     },140));
   }
 
@@ -2367,6 +2587,195 @@
     }catch(err){ alert(err.message || '復元できませんでした。'); }
     e.target.value='';
   });
+
+
+  const JUMP_ROW_HEIGHT = 42;
+  let jumpYear = null;
+  let jumpMonth = null;
+  let jumpYearScrollTimer = null;
+  let jumpMonthScrollTimer = null;
+
+  function registeredMonthEntries(){
+    return Object.entries(state.months).map(([key,data])=>{
+      const m=key.match(/^(\d{4})-(\d{2})$/);
+      const year=Number(data?.year ?? m?.[1]);
+      const month=Number(data?.month ?? m?.[2]);
+      if(!Number.isInteger(year) || !Number.isInteger(month) || month<1 || month>12) return null;
+      return {year,month,data,key:keyOf(year,month)};
+    }).filter(Boolean).sort((a,b)=>(a.year-b.year)||(a.month-b.month));
+  }
+
+  function registeredYears(){
+    return [...new Set(registeredMonthEntries().map(item=>item.year))];
+  }
+
+  function registeredMonthsForYear(year){
+    return registeredMonthEntries().filter(item=>item.year===year);
+  }
+
+  function closestRegisteredEntry(){
+    const entries=registeredMonthEntries();
+    if(!entries.length) return null;
+    const exact=entries.find(item=>item.year===state.viewYear && item.month===state.viewMonth);
+    if(exact) return exact;
+    const sameYear=entries.filter(item=>item.year===state.viewYear);
+    if(sameYear.length){
+      return sameYear.reduce((best,item)=>
+        Math.abs(item.month-state.viewMonth)<Math.abs(best.month-state.viewMonth) ? item : best
+      );
+    }
+    const target=state.viewYear*12+state.viewMonth;
+    return entries.reduce((best,item)=>{
+      const bestDist=Math.abs((best.year*12+best.month)-target);
+      const itemDist=Math.abs((item.year*12+item.month)-target);
+      return itemDist<bestDist ? item : best;
+    });
+  }
+
+  function setWheelSelected(wheel,value){
+    wheel.querySelectorAll('.month-jump-option').forEach(btn=>{
+      btn.classList.toggle('is-selected',Number(btn.dataset.value)===Number(value));
+    });
+  }
+
+  function scrollWheelToValue(wheel,value,behavior='auto'){
+    const options=[...wheel.querySelectorAll('.month-jump-option')];
+    const index=options.findIndex(btn=>Number(btn.dataset.value)===Number(value));
+    if(index<0) return;
+    wheel.scrollTo({top:index*JUMP_ROW_HEIGHT,behavior});
+  }
+
+  function updateJumpTheme(){
+    const preview=$('monthJumpTheme');
+    const data=state.months[keyOf(jumpYear,jumpMonth)];
+    const lenormand=data?.theme?.lenormand || '';
+    const loa=data?.theme?.loa || '';
+    preview.innerHTML=(lenormand || loa) ? renderThemeNameCompact(lenormand,loa) : '';
+    preview.setAttribute(
+      'aria-label',
+      [lenormand,loa].filter(Boolean).join(' × ')
+    );
+  }
+
+  function renderJumpMonthWheel(preferredMonth=null){
+    const wheel=$('monthJumpMonthWheel');
+    const entries=registeredMonthsForYear(jumpYear);
+    if(!entries.length){
+      wheel.innerHTML='';
+      jumpMonth=null;
+      updateJumpTheme();
+      return;
+    }
+
+    const target=Number(preferredMonth ?? jumpMonth ?? state.viewMonth);
+    const selected=entries.reduce((best,item)=>
+      Math.abs(item.month-target)<Math.abs(best.month-target) ? item : best
+    );
+    jumpMonth=selected.month;
+
+    wheel.innerHTML=entries.map(item=>
+      `<button class="month-jump-option${item.month===jumpMonth ? ' is-selected' : ''}" type="button" data-value="${item.month}">${item.month}月</button>`
+    ).join('');
+
+    wheel.querySelectorAll('.month-jump-option').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        jumpMonth=Number(btn.dataset.value);
+        setWheelSelected(wheel,jumpMonth);
+        scrollWheelToValue(wheel,jumpMonth,'smooth');
+        updateJumpTheme();
+      });
+    });
+
+    requestAnimationFrame(()=>scrollWheelToValue(wheel,jumpMonth,'auto'));
+    updateJumpTheme();
+  }
+
+  function renderJumpYearWheel(){
+    const wheel=$('monthJumpYearWheel');
+    const years=registeredYears();
+    wheel.innerHTML=years.map(year=>
+      `<button class="month-jump-option${year===jumpYear ? ' is-selected' : ''}" type="button" data-value="${year}">${year}</button>`
+    ).join('');
+
+    wheel.querySelectorAll('.month-jump-option').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const previousMonth=jumpMonth;
+        jumpYear=Number(btn.dataset.value);
+        setWheelSelected(wheel,jumpYear);
+        scrollWheelToValue(wheel,jumpYear,'smooth');
+        renderJumpMonthWheel(previousMonth);
+      });
+    });
+
+    requestAnimationFrame(()=>scrollWheelToValue(wheel,jumpYear,'auto'));
+  }
+
+  function syncWheelFromScroll(wheel,kind){
+    const options=[...wheel.querySelectorAll('.month-jump-option')];
+    if(!options.length) return;
+    const index=Math.max(0,Math.min(options.length-1,Math.round(wheel.scrollTop/JUMP_ROW_HEIGHT)));
+    const value=Number(options[index].dataset.value);
+
+    if(kind==='year'){
+      if(value===jumpYear) return;
+      const previousMonth=jumpMonth;
+      jumpYear=value;
+      setWheelSelected(wheel,jumpYear);
+      renderJumpMonthWheel(previousMonth);
+    }else{
+      if(value===jumpMonth) return;
+      jumpMonth=value;
+      setWheelSelected(wheel,jumpMonth);
+      updateJumpTheme();
+    }
+  }
+
+  function wireJumpWheelScroll(){
+    const yearWheel=$('monthJumpYearWheel');
+    const monthWheel=$('monthJumpMonthWheel');
+
+    yearWheel.addEventListener('scroll',()=>{
+      window.clearTimeout(jumpYearScrollTimer);
+      jumpYearScrollTimer=window.setTimeout(()=>syncWheelFromScroll(yearWheel,'year'),70);
+    },{passive:true});
+
+    monthWheel.addEventListener('scroll',()=>{
+      window.clearTimeout(jumpMonthScrollTimer);
+      jumpMonthScrollTimer=window.setTimeout(()=>syncWheelFromScroll(monthWheel,'month'),70);
+    },{passive:true});
+  }
+
+  function openMonthJump(){
+    const initial=closestRegisteredEntry();
+    if(!initial) return;
+
+    jumpYear=initial.year;
+    jumpMonth=initial.month;
+    renderJumpYearWheel();
+    renderJumpMonthWheel(jumpMonth);
+    fadeInDialog($('monthJumpDialog'));
+  }
+
+  function closeMonthJump(){
+    fadeOutDialog($('monthJumpDialog'));
+  }
+
+  function applyMonthJump(){
+    if(!jumpYear || !jumpMonth) return closeMonthJump();
+    state.viewYear=jumpYear;
+    state.viewMonth=jumpMonth;
+
+    const now=new Date();
+    state.selectedDay=
+      (now.getFullYear()===jumpYear && now.getMonth()+1===jumpMonth)
+        ? now.getDate()
+        : 1;
+    state.focusPopDay=null;
+    render();
+    closeMonthJump();
+  }
+
+  wireJumpWheelScroll();
 
   const monthSwipeRegion = $('monthSwipeRegion');
   const calendarSwipeRegion = document.querySelector('.calendar');
@@ -2543,6 +2952,16 @@
   $('nextDay').addEventListener('click',()=>changeDay(1));
   $('todayBtn').addEventListener('click',goToday);
   $('themeButton').addEventListener('click',openReading);
+  $('monthTitle').addEventListener('click',openMonthJump);
+  $('monthJumpCancel').addEventListener('click',closeMonthJump);
+  $('monthJumpApply').addEventListener('click',applyMonthJump);
+  $('monthJumpDialog').addEventListener('click',(e)=>{
+    if(e.target===$('monthJumpDialog')) closeMonthJump();
+  });
+  $('monthJumpDialog').addEventListener('cancel',(e)=>{
+    e.preventDefault();
+    closeMonthJump();
+  });
   let suppressEditMonthClick = false;
 
   $('editMonth').addEventListener('click',(e)=>{
