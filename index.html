@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.06 -->
+  <!-- pecoyomi v1.07 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -875,7 +875,15 @@
       width:46%;
       z-index:2;
       pointer-events:none;
-      background:#fff;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0) 0%,
+          rgba(255,255,255,.20) 18%,
+          rgba(255,255,255,.46) 50%,
+          rgba(255,255,255,.20) 82%,
+          rgba(255,255,255,0) 100%
+        );
       opacity:1;
       transform:translate3d(-120%,0,0);
       will-change:transform;
