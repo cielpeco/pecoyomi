@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.90 -->
+  <!-- pecoyomi v0.91 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -60,18 +60,18 @@
       background:
         radial-gradient(
           ellipse 58% 46% at 18% 20%,
-          rgba(255,218,243,.30) 0%,
+          rgba(255,218,243,.42) 0%,
           rgba(255,218,243,0) 72%
         ),
         radial-gradient(
           ellipse 64% 50% at 84% 80%,
-          rgba(255,239,170,.24) 0%,
+          rgba(255,239,170,.34) 0%,
           rgba(255,239,170,0) 74%
         );
-      opacity:.66;
-      transform:translate3d(-1.2%,-.7%,0) scale(1.02);
+      opacity:.84;
+      transform:translate3d(-2.3%,-1.4%,0) scale(1.025);
       transform-origin:center;
-      animation:pecoyomiBackgroundBreath 28s ease-in-out infinite alternate;
+      animation:pecoyomiBackgroundBreath 24s ease-in-out infinite alternate;
       will-change:transform,opacity;
     }
 
@@ -82,15 +82,15 @@
     @keyframes pecoyomiBackgroundBreath{
       0%{
         transform:translate3d(-1.2%,-.7%,0) scale(1.02);
-        opacity:.60;
+        opacity:.68;
       }
       50%{
-        transform:translate3d(.7%,.5%,0) scale(1.04);
+        transform:translate3d(1.6%,1.1%,0) scale(1.055);
         opacity:.74;
       }
       100%{
-        transform:translate3d(1.3%,-.1%,0) scale(1.025);
-        opacity:.64;
+        transform:translate3d(2.5%,-.5%,0) scale(1.035);
+        opacity:.72;
       }
     }
     button,textarea,input{font:inherit}
@@ -1173,13 +1173,13 @@
 
     /* v0.90 — 日付選択時のマイクロフィードバック。セルの座標・サイズは固定 */
     .day.is-focus-pop{
-      animation:pecoyomiDayFocusPop 170ms cubic-bezier(.2,.8,.3,1) both;
+      animation:pecoyomiDayFocusPop 200ms cubic-bezier(.2,.8,.3,1) both;
       transform-origin:center;
     }
 
     @keyframes pecoyomiDayFocusPop{
-      0%{transform:scale(.965);}
-      55%{transform:scale(1.012);}
+      0%{transform:scale(.94);}
+      58%{transform:scale(1.028);}
       100%{transform:scale(1);}
     }
 
@@ -1187,7 +1187,7 @@
       body::before{
         animation:none;
         transform:none;
-        opacity:.66;
+        opacity:.74;
       }
       .day.is-focus-pop{
         animation:none;
