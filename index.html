@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.09 -->
+  <!-- pecoyomi v1.10 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -927,6 +927,14 @@
         -webkit-mask-position:0% 0;
         mask-position:0% 0;
       }
+    }
+
+    /* v1.10 — 描画完了後はマスクを完全に外し、末尾のフェザー残りを防ぐ */
+    #readingDialog .section-title-text.reveal-complete{
+      opacity:1;
+      -webkit-mask-image:none !important;
+      mask-image:none !important;
+      will-change:auto;
     }
     @media (prefers-reduced-motion:reduce){
       #readingDialog.first-entrance .entrance-pending,
@@ -2048,6 +2056,14 @@
       });
     }
   }
+
+  $('readingDialog').addEventListener('animationend',(e)=>{
+    if(e.animationName!=='readingTitleSoftReveal') return;
+    const target=e.target;
+    if(target?.classList?.contains('section-title-text')){
+      target.classList.add('reveal-complete');
+    }
+  });
 
   function openReading(){
     const data=currentMonthData();
