@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.05 -->
+  <!-- pecoyomi v1.06 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -853,7 +853,7 @@
       100%{opacity:1;}
     }
 
-    /* v1.02 — 見出しエリアをマスクにして、細い帯が止まらず横切る */
+    /* v1.06 — Safari安定化：文字と白帯を実DOMの別レイヤーとして独立描画 */
     #readingDialog .section-title{
       position:relative;
       display:block;
@@ -861,53 +861,49 @@
       isolation:isolate;
     }
 
-    #readingDialog.first-entrance .section.entrance-pending .section-title{
-      color:transparent;
+    #readingDialog .section-title-text{
+      position:relative;
+      z-index:1;
+      display:inline-block;
     }
 
-    #readingDialog.first-entrance .section.entrance-pending .section-title::after{
-      content:"";
+    #readingDialog .section-title-wipe{
       position:absolute;
       top:0;
       bottom:0;
       left:0;
       width:46%;
-      z-index:1;
+      z-index:2;
       pointer-events:none;
       background:#fff;
       opacity:1;
-      transform:translateX(-120%);
+      transform:translate3d(-120%,0,0);
       will-change:transform;
     }
 
+    #readingDialog.first-entrance
+      .section.entrance-pending .section-title-text{
+      opacity:0;
+    }
+
     #readingDialog.first-entrance.is-visible
-      .section.entrance-pending.entrance-visible .section-title{
+      .section.entrance-pending.entrance-visible .section-title-text{
       animation:readingTitleTextAppear 720ms linear 40ms both;
     }
 
     #readingDialog.first-entrance.is-visible
-      .section.entrance-pending.entrance-visible .section-title::after{
+      .section.entrance-pending.entrance-visible .section-title-wipe{
       animation:readingTitleWipe 720ms cubic-bezier(.32,.02,.30,1) 40ms both;
     }
 
     @keyframes readingTitleWipe{
-      0%{transform:translateX(-120%);}
-      100%{transform:translateX(330%);}
+      0%{transform:translate3d(-120%,0,0);}
+      100%{transform:translate3d(330%,0,0);}
     }
 
     @keyframes readingTitleTextAppear{
-      0%,54%{
-        color:transparent;
-        opacity:0;
-      }
-      72%{
-        color:var(--ink);
-        opacity:1;
-      }
-      100%{
-        color:var(--ink);
-        opacity:1;
-      }
+      0%,54%{opacity:0;}
+      72%,100%{opacity:1;}
     }
     @media (prefers-reduced-motion:reduce){
       #readingDialog.first-entrance .entrance-pending,
@@ -915,10 +911,10 @@
         opacity:1;
         animation:none;
       }
-      #readingDialog.first-entrance .section.entrance-pending .section-title,
+      #readingDialog.first-entrance .section.entrance-pending .section-title-text,
       #readingDialog.first-entrance.is-visible
-        .section.entrance-pending.entrance-visible .section-title{
-        color:var(--ink);
+        .section.entrance-pending.entrance-visible .section-title-text{
+        opacity:1;
         animation:none;
       }
       #readingDialog.first-entrance .section.entrance-pending .section-kicker,
@@ -927,9 +923,9 @@
         opacity:1;
         animation:none;
       }
-      #readingDialog.first-entrance .section.entrance-pending .section-title::after,
+      #readingDialog.first-entrance .section.entrance-pending .section-title-wipe,
       #readingDialog.first-entrance.is-visible
-        .section.entrance-pending.entrance-visible .section-title::after{
+        .section.entrance-pending.entrance-visible .section-title-wipe{
         display:none;
         animation:none;
       }
@@ -2030,7 +2026,7 @@
         <section class="section">
           <div class="section-head">
             <div class="section-kicker">MONTHLY THEME</div>
-            <div class="section-title">${escapeHtml(themeName)}</div>
+            <div class="section-title"><span class="section-title-text">${escapeHtml(themeName)}</span><span class="section-title-wipe" aria-hidden="true"></span></div>
             <div class="section-rule" aria-hidden="true"></div>
           </div>
           <div class="prose">${renderText(data.theme.text)}</div>
@@ -2038,7 +2034,7 @@
         <section class="section">
           <div class="section-head">
             <div class="section-kicker">OVERVIEW</div>
-            <div class="section-title">全体</div>
+            <div class="section-title"><span class="section-title-text">全体</span><span class="section-title-wipe" aria-hidden="true"></span></div>
             <div class="section-rule" aria-hidden="true"></div>
           </div>
           <div class="prose">${renderText(data.overview)}</div>
@@ -2046,7 +2042,7 @@
         ${data.newMoon ? `<section class="section">
           <div class="section-head">
             <div class="section-kicker">NEW MOON ${data.newMoon.month}/${data.newMoon.day}</div>
-            <div class="section-title">${escapeHtml(data.newMoon.card)}</div>
+            <div class="section-title"><span class="section-title-text">${escapeHtml(data.newMoon.card)}</span><span class="section-title-wipe" aria-hidden="true"></span></div>
             <div class="section-rule" aria-hidden="true"></div>
           </div>
           <div class="prose">${renderText(data.newMoon.text)}</div>
@@ -2054,7 +2050,7 @@
         ${data.fullMoon ? `<section class="section">
           <div class="section-head">
             <div class="section-kicker">FULL MOON ${data.fullMoon.month}/${data.fullMoon.day}</div>
-            <div class="section-title">${escapeHtml(data.fullMoon.card)}</div>
+            <div class="section-title"><span class="section-title-text">${escapeHtml(data.fullMoon.card)}</span><span class="section-title-wipe" aria-hidden="true"></span></div>
             <div class="section-rule" aria-hidden="true"></div>
           </div>
           <div class="prose">${renderText(data.fullMoon.text)}</div>
