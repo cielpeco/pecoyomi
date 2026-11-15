@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.94 -->
+  <!-- pecoyomi v0.95 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -613,10 +613,10 @@
     }
     #editMonth.is-secret-filling::before{
       opacity:1;
-      transform:translate(-50%,-50%) scale(1);
+      transform:translate(-50%,-50%) scale(1.04);
       transition:
-        transform 700ms linear,
-        opacity 80ms ease-out;
+        transform 700ms cubic-bezier(.22,.62,.28,1),
+        opacity 100ms ease-out;
     }
     #editMonth.is-secret-filling .edit-month-label{
       color:#fff;
@@ -1235,11 +1235,68 @@
 
     /* 「月を追加 / 編集」長押しで広がる塗りを、
        有効ボタンと同じ #6FE0FC に変更。 */
+    /* v0.95 — 長押し色はガラスの中でにじむ。輪郭はぼかし、反射はその上に残す */
     #editMonth::before{
-      background:#6FE0FC;
+      width:132%;
+      background:
+        radial-gradient(
+          circle at center,
+          rgba(111,224,252,.82) 0%,
+          rgba(111,224,252,.78) 58%,
+          rgba(111,224,252,.54) 72%,
+          rgba(111,224,252,.20) 86%,
+          rgba(111,224,252,0) 100%
+        );
+      filter:blur(6px);
       box-shadow:none;
       -webkit-backdrop-filter:none;
       backdrop-filter:none;
+      z-index:0;
+    }
+
+    /* 長押し中だけ、ガラス表面の白い反射を色変化より上へ重ねる */
+    #editMonth::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      pointer-events:none;
+      opacity:0;
+      z-index:1;
+      background:
+        linear-gradient(90deg,
+          transparent 0%,
+          rgba(255,255,255,.30) 22%,
+          rgba(255,255,255,.72) 50%,
+          rgba(255,255,255,.30) 78%,
+          transparent 100%
+        ) center top 1px / 88% 1px no-repeat,
+        linear-gradient(90deg,
+          transparent 0%,
+          rgba(255,255,255,.19) 22%,
+          rgba(255,255,255,.50) 50%,
+          rgba(255,255,255,.19) 78%,
+          transparent 100%
+        ) center bottom 1px / 88% 1px no-repeat,
+        linear-gradient(180deg,
+          rgba(255,255,255,.42) 0px,
+          rgba(255,255,255,.24) 2px,
+          rgba(255,255,255,.08) 5px,
+          transparent 9px
+        ) center top / 100% 10px no-repeat,
+        linear-gradient(0deg,
+          rgba(255,255,255,.30) 0px,
+          rgba(255,255,255,.16) 2px,
+          rgba(255,255,255,.06) 5px,
+          transparent 9px
+        ) center bottom / 100% 10px no-repeat;
+      transition:opacity 120ms ease-out;
+    }
+    #editMonth.is-secret-filling::after{
+      opacity:1;
+    }
+    #editMonth .edit-month-label{
+      z-index:2;
     }
     #editMonth.is-secret-filling .edit-month-label{
       color:#51516F;
