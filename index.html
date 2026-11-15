@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.92 -->
+  <!-- pecoyomi v0.93 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -41,20 +41,23 @@
       min-height:100dvh;
       color:var(--ink);
       font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
-      background:var(--app-background);
-      background-repeat:no-repeat;
-      background-size:100vw 100dvh;
-      background-attachment:fixed;
+      /* v0.93 — 背景本体は下の固定キャンバスへ移動。
+         html/body はキーボードで高さが変わっても色面を再計算しない。 */
+      background:#fff;
     }
     body{
       overflow:hidden;
     }
 
-    /* v0.90 — 背景の空気だけがごくゆっくり漂う。レイアウト値は一切動かさない */
+    /* v0.93 — キーボードのvisual viewport変化から背景を切り離す。
+       起動時の安定した画面高を固定キャンバスとして保持し、上下80pxずつオーバースキャン。 */
     body::before{
       content:"";
       position:fixed;
-      inset:-7%;
+      left:-40px;
+      top:-80px;
+      width:calc(100vw + 80px);
+      height:calc(var(--stable-screen-height, 100dvh) + 160px);
       z-index:0;
       pointer-events:none;
       background:
@@ -67,7 +70,10 @@
           ellipse 64% 50% at 84% 80%,
           rgba(255,239,170,.34) 0%,
           rgba(255,239,170,0) 74%
-        );
+        ),
+        var(--app-background);
+      background-repeat:no-repeat;
+      background-size:100% 100%;
       opacity:.84;
       transform:translate3d(-2.3%,-1.4%,0) scale(1.025);
       transform-origin:center;
@@ -1929,10 +1935,17 @@
     const app=document.querySelector('.app');
     if(!app) return;
     const h=app.getBoundingClientRect().height;
+    const screenH=window.innerHeight;
     if(h>0){
       document.documentElement.style.setProperty(
         '--app-shell-height',
         `${Math.round(h*2)/2}px`
+      );
+    }
+    if(screenH>0){
+      document.documentElement.style.setProperty(
+        '--stable-screen-height',
+        `${Math.round(screenH*2)/2}px`
       );
     }
   }
@@ -2430,6 +2443,7 @@
   // 端末回転は本物の画面サイズ変更なので、その時だけ固定高を取り直す。
   window.addEventListener('orientationchange',()=>{
     document.documentElement.style.removeProperty('--app-shell-height');
+    document.documentElement.style.removeProperty('--stable-screen-height');
     window.setTimeout(()=>{
       requestAnimationFrame(()=>requestAnimationFrame(lockMainShellHeight));
     },450);
