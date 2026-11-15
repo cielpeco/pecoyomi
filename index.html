@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.97 -->
+  <!-- pecoyomi v0.98 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -2086,7 +2086,12 @@
   }
 
   function closeBackup(){
-    fadeOutDialog($('backupDialog'));
+    fadeOutDialog($('backupDialog'),()=>{
+      const btn=$('editMonth');
+      btn?.classList.remove('is-secret-filling');
+      const label=btn?.querySelector('.edit-month-label');
+      if(label) label.textContent='月を追加 / 編集';
+    });
   }
 
   function renderDelete(data){
@@ -2377,8 +2382,7 @@
         fillTimer = window.setTimeout(()=>{
           secretOpened = true;
           suppressEditMonthClick = true;
-          btn.classList.remove('is-secret-filling');
-          if(label) label.textContent = normalLabel;
+          /* v0.98 — 成立後は最終フレーム（水色＋バックアップ表記）を保持 */
           filling = false;
           openBackup();
         },700);
