@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.96 -->
+  <!-- pecoyomi v0.97 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -612,11 +612,17 @@
         inset 0 -1px 0 rgba(70,60,50,.05);
     }
     #editMonth.is-secret-filling::before{
-      opacity:1;
       transform:translate(-50%,-50%) scale(1.04);
       transition:
-        transform 700ms cubic-bezier(.52,.04,.82,.38),
-        opacity 100ms ease-out;
+        transform 700ms cubic-bezier(.52,.04,.82,.38);
+      animation:editMonthFillOpacity 700ms cubic-bezier(.52,.04,.82,.38) both;
+    }
+
+    @keyframes editMonthFillOpacity{
+      0%{opacity:.34;}
+      38%{opacity:.48;}
+      72%{opacity:.68;}
+      100%{opacity:1;}
     }
     #editMonth.is-secret-filling .edit-month-label{
       color:#fff;
