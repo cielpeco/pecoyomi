@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.93 -->
+  <!-- pecoyomi v0.94 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -877,10 +877,24 @@
       justify-content:center;
       z-index:2;
     }
+    /* v0.94 — 編集タイトルもメインのテーマ名と同じ2段基準で配置 */
+    #editDialog .edit-head-copy{
+      min-width:0;
+      width:100%;
+      text-align:center;
+    }
+    #editDialog .edit-eyebrow-spacer{
+      font-size:11px;
+      line-height:normal;
+      margin-bottom:3px;
+      visibility:hidden;
+      user-select:none;
+    }
     #editDialog .modal-head h2{
       margin:0;
       font-size:16px;
       font-weight:700;
+      line-height:normal;
       text-align:center;
     }
     #editDialog .modal-body{
@@ -1312,7 +1326,10 @@
   <dialog id="editDialog">
     <div class="modal">
       <div class="modal-head">
-        <h2>マンスリーを追加 / 編集</h2>
+        <div class="edit-head-copy">
+          <div class="edit-eyebrow-spacer" aria-hidden="true">spacer</div>
+          <h2>マンスリーを追加 / 編集</h2>
+        </div>
       </div>
       <div class="modal-body">
         <textarea id="rawInput" placeholder="ここにマンスリー原文をそのまま貼り付け"></textarea>
