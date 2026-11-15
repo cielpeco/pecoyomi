@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v0.91 -->
+  <!-- pecoyomi v0.92 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -97,7 +97,7 @@
     button{border:0;background:none;color:inherit}
     .app{
       /* 背景だけ全面化し、UIは従来のsafe-area内に戻す */
-      height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      height:var(--app-shell-height, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
       padding:18px 14px 12px;
       display:flex;
       flex-direction:column;
@@ -455,7 +455,7 @@
     /* v0.89 — 月相記号はセル角ではなく日付数字の近くへグルーピング */
     .moon{
       position:absolute;
-      left:calc(50% + 15px);
+      left:calc(50% + 13px);
       top:-7px;
       right:auto;
       font-size:8px;
@@ -1117,11 +1117,11 @@
     /* 色だけ変える。反射・輪郭・影・ぼかしは白と完全共通 */
     .controlbtn.primary,
     .action:not(.secondary):not(.danger){
-      --glass-tint:#6FE0FC;
+      --glass-tint:rgba(111,224,252,.70);
       --glass-ink:#51516F;
     }
     .action.danger{
-      --glass-tint:#FCA7DD;
+      --glass-tint:rgba(252,167,221,.68);
       --glass-ink:#8D285D;
     }
 
@@ -1200,7 +1200,7 @@
        古い .action.danger:active より詳細度を上げて、
        押下時も同じガラス面を維持する。 */
     .action.danger{
-      --glass-tint:#FCA7DD;
+      --glass-tint:rgba(252,167,221,.68);
       --glass-ink:#8D285D;
       background:var(--glass-face);
       color:var(--glass-ink);
@@ -1923,6 +1923,48 @@
     fadeOutDialog(dlg,()=>clearReadingEntrance(dlg));
   }
 
+  // v0.92 — メイン画面は編集キーボードの高さ変化に追従させない。
+  // 起動時に安定した高さを保存し、編集画面の裏側のレイアウトを固定する。
+  function lockMainShellHeight(){
+    const app=document.querySelector('.app');
+    if(!app) return;
+    const h=app.getBoundingClientRect().height;
+    if(h>0){
+      document.documentElement.style.setProperty(
+        '--app-shell-height',
+        `${Math.round(h*2)/2}px`
+      );
+    }
+  }
+
+  // iOSでキーボードを閉じた直後にvisual viewportのoffsetが残る場合の後始末。
+  function settleViewportAfterKeyboard(){
+    const vv=window.visualViewport;
+    let lastHeight=-1;
+    let stableFrames=0;
+    const started=performance.now();
+
+    const tick=()=>{
+      window.scrollTo(0,0);
+      const h=vv?.height ?? window.innerHeight;
+      if(Math.abs(h-lastHeight)<0.5){
+        stableFrames++;
+      }else{
+        stableFrames=0;
+      }
+      lastHeight=h;
+
+      if(stableFrames>=5 || performance.now()-started>=900){
+        window.scrollTo(0,0);
+        // Safariに最終レイアウトを再評価させる。サイズそのものは変更しない。
+        void document.documentElement.offsetHeight;
+        return;
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
   function openEditor(){
     const data=currentMonthData();
     $('rawInput').value=data?.raw || '';
@@ -1936,8 +1978,14 @@
   }
 
   function closeEditor(){
+    // textareaにフォーカスが残ったままdialogを閉じると、
+    // iOSが縮んだviewport寸法をメイン画面へ一瞬持ち越すことがある。
+    const active=document.activeElement;
+    if(active && $('editDialog').contains(active) && typeof active.blur==='function'){
+      active.blur();
+    }
     document.body.classList.remove('edit-open');
-    fadeOutDialog($('editDialog'));
+    fadeOutDialog($('editDialog'),settleViewportAfterKeyboard);
   }
 
   function openBackup(){
@@ -2337,6 +2385,7 @@
     const started=performance.now();
 
     const finish=()=>{
+      lockMainShellHeight();
       app?.classList.add('is-boot-ready');
       // アプリが描画されるフレームを挟んでからフタを外す。
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -2377,6 +2426,14 @@
     };
     requestAnimationFrame(waitForStableLayout);
   })();
+
+  // 端末回転は本物の画面サイズ変更なので、その時だけ固定高を取り直す。
+  window.addEventListener('orientationchange',()=>{
+    document.documentElement.style.removeProperty('--app-shell-height');
+    window.setTimeout(()=>{
+      requestAnimationFrame(()=>requestAnimationFrame(lockMainShellHeight));
+    },450);
+  });
 })();
 </script>
 </body>
