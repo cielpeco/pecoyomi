@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.17 -->
+  <!-- pecoyomi v1.18 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1295,10 +1295,13 @@
         inset 0 -1px 0 rgba(70,60,50,.055);
     }
     #editDialog .edit-cancel-area{
-      margin-top:18px;
+      /* 休日カレンダーとの間に、少し大きめの呼吸をつくる */
+      margin-top:34px;
     }
     #editDialog .edit-delete-area{
-      margin-top:44px;
+      /* 危険操作の存在が下端から少し見える距離感に寄せる */
+      margin-top:20px;
+      padding-bottom:10px;
     }
 
     /* バックアップ：メンテナンス用の別モードとして暗転ポップアップ */
@@ -1516,20 +1519,26 @@
       left:50%;
       top:50%;
       z-index:1000;
-      max-width:calc(100vw - 56px);
-      transform:translate3d(-50%,-50%,0) scale(.98);
-      padding:12px 18px;
-      border:1px solid rgba(255,255,255,.62);
-      border-radius:999px;
+      width:100vw;
+      max-width:none;
+      transform:translate3d(-50%,-50%,0) scale(.99);
+      padding:20px 24px;
+      border-top:1px solid rgba(255,255,255,.62);
+      border-bottom:1px solid rgba(255,255,255,.46);
+      border-left:0;
+      border-right:0;
+      border-radius:0;
       background:rgba(255,255,255,.62);
       color:var(--ink);
       -webkit-backdrop-filter:blur(22px) saturate(116%);
       backdrop-filter:blur(22px) saturate(116%);
       box-shadow:
-        0 8px 24px rgba(70,60,50,.08),
+        0 8px 24px rgba(70,60,50,.07),
         inset 0 1px 0 rgba(255,255,255,.90);
       font-size:13px;
       font-weight:700;
+      line-height:1.5;
+      text-align:center;
       white-space:nowrap;
       opacity:0;
       pointer-events:none;
