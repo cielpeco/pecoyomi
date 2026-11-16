@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.15 -->
+  <!-- pecoyomi v1.16 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -459,19 +459,14 @@
       padding:0 16px 8px;
       font-size:12px;
       line-height:1.6;
-      color:rgba(28,28,30,.18);
-      text-align:center;
-      opacity:.42;
-      transition:
-        color 90ms ease-out,
-        opacity 90ms ease-out;
-    }
-    #monthJumpDialog.is-visible .month-jump-hint{
       color:var(--sub);
+      text-align:center;
+      opacity:0;
+      transition:opacity 105ms ease-out;
+    }
+    #monthJumpDialog.is-content-visible .month-jump-hint{
       opacity:1;
-      transition:
-        color 150ms ease-out 38ms,
-        opacity 150ms ease-out 38ms;
+      transition:opacity 135ms ease-out;
     }
     #monthJumpDialog.is-visible .month-jump-sheet{
       opacity:1;
@@ -518,8 +513,8 @@
       scrollbar-width:none;
       padding:84px 0;
       touch-action:pan-y;
-      opacity:.34;
-      transition:opacity 90ms ease-out;
+      opacity:0;
+      transition:opacity 105ms ease-out;
       -webkit-mask-image:linear-gradient(
         to bottom,
         transparent 0,
@@ -540,9 +535,9 @@
       );
     }
     .month-jump-wheel::-webkit-scrollbar{display:none}
-    #monthJumpDialog.is-visible .month-jump-wheel{
+    #monthJumpDialog.is-content-visible .month-jump-wheel{
       opacity:1;
-      transition:opacity 155ms ease-out 42ms;
+      transition:opacity 135ms ease-out;
     }
     .month-jump-option{
       -webkit-appearance:none;
@@ -555,7 +550,7 @@
       border:0;
       padding:0;
       background:transparent;
-      color:rgba(28,28,30,.16);
+      color:var(--sub);
       font-size:15px;
       line-height:1;
       font-weight:400;
@@ -567,15 +562,9 @@
       -webkit-tap-highlight-color:transparent;
     }
     .month-jump-option.is-selected{
-      color:rgba(28,28,30,.24);
+      color:var(--ink);
       opacity:1;
       font-weight:600;
-    }
-    #monthJumpDialog.is-visible .month-jump-option{
-      color:var(--sub);
-    }
-    #monthJumpDialog.is-visible .month-jump-option.is-selected{
-      color:var(--ink);
     }
     .month-jump-option:focus,
     .month-jump-option:focus-visible{outline:none}
@@ -2615,6 +2604,8 @@
   let jumpMonth = null;
   let jumpYearScrollTimer = null;
   let jumpMonthScrollTimer = null;
+  let jumpContentTimer = null;
+  let jumpCloseTimer = null;
 
   function registeredMonthEntries(){
     return Object.entries(state.months).map(([key,data])=>{
@@ -2769,17 +2760,44 @@
     const initial=closestRegisteredEntry();
     if(!initial) return;
 
+    const dlg=$('monthJumpDialog');
+    window.clearTimeout(jumpContentTimer);
+    window.clearTimeout(jumpCloseTimer);
+    dlg.classList.remove('is-content-visible');
+
     jumpYear=initial.year;
     jumpMonth=initial.month;
     renderJumpYearWheel();
     renderJumpMonthWheel(jumpMonth);
     syncMonthJumpActionPosition();
-    fadeInDialog($('monthJumpDialog'));
+    fadeInDialog(dlg);
     requestAnimationFrame(syncMonthJumpActionPosition);
+
+    /* 面の移動が終わってから中身だけ静かに表示 */
+    jumpContentTimer=window.setTimeout(()=>{
+      if(dlg.open && dlg.classList.contains('is-visible')){
+        dlg.classList.add('is-content-visible');
+      }
+    },190);
   }
 
   function closeMonthJump(){
-    fadeOutDialog($('monthJumpDialog'));
+    const dlg=$('monthJumpDialog');
+    if(!dlg.open) return;
+
+    window.clearTimeout(jumpContentTimer);
+    window.clearTimeout(jumpCloseTimer);
+
+    /* 先に中身を消し、そのあと面だけを下へ退場 */
+    dlg.classList.remove('is-content-visible');
+
+    jumpCloseTimer=window.setTimeout(()=>{
+      if(!dlg.open) return;
+      dlg.classList.remove('is-visible');
+      window.setTimeout(()=>{
+        if(dlg.open) dlg.close();
+      },190);
+    },105);
   }
 
   function applyMonthJump(){
