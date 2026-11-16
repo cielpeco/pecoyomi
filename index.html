@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.28 -->
+  <!-- pecoyomi v1.29 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -2643,11 +2643,16 @@
     const itemCount=readingEntranceItems(dlg).length;
     const isFirstEntrance=completed.size<itemCount;
 
-    // その月の初回表示は、前回どこまで読んでいても必ず一番上から。
-    // showModal前と表示直後の両方で0を入れて、iOS側のスクロール位置復元も抑える。
-    if(lastReadingMonthKey!==entranceMonthKey){
+    // v1.29 — 別の月を開くときは必ず先頭へ。
+    // iOS Safariではbody以外にdialog自身のスクロール位置が残ることがある。
+    const isDifferentReadingMonth=lastReadingMonthKey!==entranceMonthKey;
+    const resetReadingScroll=()=>{
+      dlg.scrollTop=0;
       body.scrollTop=0;
-    }
+      const modal=dlg.querySelector('.modal');
+      if(modal) modal.scrollTop=0;
+    };
+    if(isDifferentReadingMonth) resetReadingScroll();
     lastReadingMonthKey=entranceMonthKey;
 
     dlg.classList.toggle('first-entrance',isFirstEntrance);
@@ -2661,15 +2666,13 @@
     document.body.classList.add('reading-open');
     fadeInDialog(dlg);
 
-    if(isFirstEntrance || lastReadingMonthKey===entranceMonthKey){
+    requestAnimationFrame(()=>{
+      if(isDifferentReadingMonth) resetReadingScroll();
       requestAnimationFrame(()=>{
-        requestAnimationFrame(()=>{
-          if(isFirstEntrance){
-            startReadingEntrance(dlg);
-          }
-        });
+        if(isDifferentReadingMonth) resetReadingScroll();
+        if(isFirstEntrance) startReadingEntrance(dlg);
       });
-    }
+    });
   }
 
   function closeReading(){
