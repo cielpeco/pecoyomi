@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.16 -->
+  <!-- pecoyomi v1.17 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -686,8 +686,14 @@
     }
     .selected .moon{filter:grayscale(1) brightness(3)}
     .sun{color:#b04b4b}
-    .holiday{color:#b04b4b}
     .sat{color:#4c69a2}
+    .holiday{color:#b04b4b}
+    .day.custom-holiday,
+    .day.custom-holiday.sun,
+    .day.custom-holiday.holiday,
+    .day.custom-holiday.sat{
+      color:#C66A20;
+    }
     .day.selected.sun,
     .day.selected.holiday,
     .day.selected.sat{color:white}
@@ -1433,6 +1439,109 @@
     }
     .report.bad{background:#f4e1e1;color:#7c3434}
     .hint{font-size:12px;color:var(--sub);line-height:1.6;margin-top:8px}
+
+    /* v1.17 — 編集画面：その月だけの手動休日 */
+    .holiday-editor{
+      margin-top:18px;
+      padding:16px 18px 18px;
+      border-radius:28px;
+      background:rgba(255,255,255,.18);
+    }
+    .holiday-editor-title{
+      font-size:13px;
+      font-weight:700;
+      color:var(--ink);
+      margin-bottom:2px;
+    }
+    .holiday-editor-hint{
+      font-size:11px;
+      line-height:1.55;
+      color:var(--sub);
+      margin-bottom:10px;
+    }
+    .holiday-editor-weekdays,
+    .holiday-editor-days{
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:2px;
+    }
+    .holiday-editor-weekdays div{
+      text-align:center;
+      font-size:10px;
+      font-weight:600;
+      color:var(--sub);
+      padding:2px 0 4px;
+    }
+    .holiday-editor-weekdays .sun{color:#b04b4b}
+    .holiday-editor-weekdays .sat{color:#4c69a2}
+    .holiday-edit-day{
+      -webkit-appearance:none;
+      appearance:none;
+      border:0;
+      background:transparent;
+      min-width:0;
+      min-height:38px;
+      padding:0;
+      border-radius:10px;
+      display:grid;
+      place-items:center;
+      font:inherit;
+      font-size:13px;
+      font-weight:400;
+      color:var(--ink);
+      -webkit-tap-highlight-color:transparent;
+      transition:
+        background 90ms ease-out,
+        color 90ms ease-out,
+        transform 70ms ease-out;
+    }
+    .holiday-edit-day:active{transform:scale(.94)}
+    .holiday-edit-day.sun{color:#b04b4b}
+    .holiday-edit-day.sat{color:#4c69a2}
+    .holiday-edit-day.holiday{color:#b04b4b}
+    .holiday-edit-day.custom-holiday,
+    .holiday-edit-day.custom-holiday.sun,
+    .holiday-edit-day.custom-holiday.holiday,
+    .holiday-edit-day.custom-holiday.sat{
+      color:#C66A20;
+      background:rgba(240,164,89,.14);
+      font-weight:600;
+    }
+    .holiday-edit-day.is-calendar-holiday{cursor:default}
+    .holiday-edit-day.blank{pointer-events:none}
+
+    /* 復元成功：画面中央の小さなトースト */
+    .app-toast{
+      position:fixed;
+      left:50%;
+      top:50%;
+      z-index:1000;
+      max-width:calc(100vw - 56px);
+      transform:translate3d(-50%,-50%,0) scale(.98);
+      padding:12px 18px;
+      border:1px solid rgba(255,255,255,.62);
+      border-radius:999px;
+      background:rgba(255,255,255,.62);
+      color:var(--ink);
+      -webkit-backdrop-filter:blur(22px) saturate(116%);
+      backdrop-filter:blur(22px) saturate(116%);
+      box-shadow:
+        0 8px 24px rgba(70,60,50,.08),
+        inset 0 1px 0 rgba(255,255,255,.90);
+      font-size:13px;
+      font-weight:700;
+      white-space:nowrap;
+      opacity:0;
+      pointer-events:none;
+      transition:
+        opacity 150ms ease-out,
+        transform 170ms cubic-bezier(.22,.72,.28,1);
+    }
+    .app-toast.is-visible{
+      opacity:1;
+      transform:translate3d(-50%,-50%,0) scale(1);
+    }
+
     .hidden{display:none!important}
 
     /* v0.82 — 共通ガラスマテリアル。白を基準に、青・ピンクはTintだけ差し替える。
@@ -1752,6 +1861,15 @@
         </div>
         <div id="parseReport" class="report hidden"></div>
 
+        <section id="holidayEditor" class="holiday-editor hidden" aria-label="休日の追加">
+          <div class="holiday-editor-title">休日の追加</div>
+          <div class="holiday-editor-hint">タップした日を、この月だけの休日として追加できるよ。</div>
+          <div class="holiday-editor-weekdays" aria-hidden="true">
+            <div class="sun">SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div class="sat">SAT</div>
+          </div>
+          <div class="holiday-editor-days" id="holidayEditorDays"></div>
+        </section>
+
         <div class="actions edit-cancel-area">
           <button class="action secondary" id="cancelEditBtn">編集中止</button>
         </div>
@@ -1794,6 +1912,8 @@
     <button class="controlbtn primary month-jump-action" id="monthJumpApply" type="button">ジャンプ</button>
   </dialog>
 
+  <div class="app-toast" id="appToast" role="status" aria-live="polite"></div>
+
 <script>
 (() => {
   'use strict';
@@ -1820,6 +1940,15 @@
   function keyOf(y,m){ return `${y}-${String(m).padStart(2,'0')}`; }
   function currentMonthData(){ return state.months[keyOf(state.viewYear,state.viewMonth)] || null; }
   function daysInMonth(y,m){ return new Date(y,m,0).getDate(); }
+
+  function normalizedCustomHolidays(data){
+    const max=data ? daysInMonth(data.year,data.month) : 31;
+    return [...new Set(
+      (Array.isArray(data?.customHolidays) ? data.customHolidays : [])
+        .map(Number)
+        .filter(d=>Number.isInteger(d) && d>=1 && d<=max)
+    )].sort((a,b)=>a-b);
+  }
   function weekdayJa(y,m,d){ return ['日','月','火','水','木','金','土'][new Date(y,m-1,d).getDay()]; }
 
   // 日本の祝日を計算（現行制度ベース）
@@ -2020,6 +2149,7 @@
       newMoon: parseMoon(sections['新月'] || ''),
       fullMoon: parseMoon(sections['満月'] || ''),
       days,
+      customHolidays:[],
       raw
     };
   }
@@ -2106,6 +2236,7 @@
     const max = daysInMonth(state.viewYear,state.viewMonth);
     const now = new Date();
     const holidays = japaneseHolidayMap(state.viewYear);
+    const customHolidays = new Set(normalizedCustomHolidays(data));
 
     for (let i=0;i<first;i++){
       const b = document.createElement('div');
@@ -2118,9 +2249,11 @@
       btn.className='day';
       const dow = new Date(state.viewYear,state.viewMonth-1,d).getDay();
       const holidayName = holidays.get(`${state.viewMonth}-${d}`);
+      const isCustomHoliday = customHolidays.has(d);
       if (dow===0) btn.classList.add('sun');
-      if (holidayName) btn.classList.add('holiday');
       if (dow===6) btn.classList.add('sat');
+      if (holidayName) btn.classList.add('holiday');
+      if (isCustomHoliday) btn.classList.add('custom-holiday');
       if (data?.days?.[d]) btn.classList.add('registered');
       if (d===state.selectedDay) btn.classList.add('selected');
       if (d===state.focusPopDay) btn.classList.add('is-focus-pop');
@@ -2131,7 +2264,10 @@
       if (data?.fullMoon?.day===d && data.fullMoon.month===state.viewMonth) moon += '<span class="moon">○</span>';
       const symbol = data?.days?.[d]?.card || '';
       btn.innerHTML = `<span class="day-anchor"><span class="day-number">${d}</span><span class="day-symbol">${escapeHtml(symbol)}</span>${moon}</span>`;
-      btn.setAttribute('aria-label', `${state.viewMonth}月${d}日${symbol ? '、'+symbol : ''}`);
+      btn.setAttribute(
+        'aria-label',
+        `${state.viewMonth}月${d}日${isCustomHoliday ? '、追加休日' : ''}${symbol ? '、'+symbol : ''}`
+      );
       btn.addEventListener('click',()=>{
         state.selectedDay=d;
         state.focusPopDay=d;
@@ -2450,11 +2586,91 @@
     requestAnimationFrame(tick);
   }
 
+  let appToastTimer=null;
+  function showToast(message, duration=1800){
+    const toast=$('appToast');
+    if(!toast) return;
+    window.clearTimeout(appToastTimer);
+    toast.textContent=message;
+    toast.classList.remove('is-visible');
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>toast.classList.add('is-visible'));
+    });
+    appToastTimer=window.setTimeout(()=>{
+      toast.classList.remove('is-visible');
+    },duration);
+  }
+
+  function renderHolidayEditor(data){
+    const editor=$('holidayEditor');
+    const root=$('holidayEditorDays');
+    if(!editor || !root || !data){
+      editor?.classList.add('hidden');
+      if(root) root.innerHTML='';
+      return;
+    }
+
+    const year=data.year;
+    const month=data.month;
+    const max=daysInMonth(year,month);
+    const first=new Date(year,month-1,1).getDay();
+    const holidays=japaneseHolidayMap(year);
+    const custom=new Set(normalizedCustomHolidays(data));
+
+    root.innerHTML='';
+
+    for(let i=0;i<first;i++){
+      const blank=document.createElement('div');
+      blank.className='holiday-edit-day blank';
+      root.appendChild(blank);
+    }
+
+    for(let d=1;d<=max;d++){
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='holiday-edit-day';
+      btn.textContent=String(d);
+
+      const dow=new Date(year,month-1,d).getDay();
+      const holidayName=holidays.get(`${month}-${d}`);
+      const calendarHoliday=(dow===0 || Boolean(holidayName));
+
+      if(dow===0) btn.classList.add('sun');
+      if(dow===6) btn.classList.add('sat');
+      if(holidayName) btn.classList.add('holiday');
+      if(custom.has(d)) btn.classList.add('custom-holiday');
+      if(calendarHoliday) btn.classList.add('is-calendar-holiday');
+
+      btn.setAttribute(
+        'aria-label',
+        `${month}月${d}日${calendarHoliday ? '、カレンダー上の休日' : ''}${custom.has(d) ? '、追加休日' : ''}`
+      );
+
+      btn.addEventListener('click',()=>{
+        /* 日曜・祝日はすでに休日なので、手動追加の対象にはしない */
+        if(calendarHoliday) return;
+
+        const next=new Set(normalizedCustomHolidays(data));
+        if(next.has(d)) next.delete(d);
+        else next.add(d);
+
+        data.customHolidays=[...next].sort((a,b)=>a-b);
+        renderHolidayEditor(data);
+      });
+
+      root.appendChild(btn);
+    }
+
+    editor.classList.remove('hidden');
+  }
+
   function openEditor(){
     const data=currentMonthData();
     $('rawInput').value=data?.raw || '';
     $('parseReport').classList.add('hidden');
     $('saveBtn').classList.add('hidden');
+    $('holidayEditor').classList.add('hidden');
+    $('holidayEditorDays').innerHTML='';
     state.pending=null;
     renderDelete(data);
     const dlg=$('editDialog');
@@ -2541,6 +2757,8 @@
     const box=$('parseReport');
     try{
       const data=parseRaw($('rawInput').value);
+      const existing=state.months[keyOf(data.year,data.month)];
+      data.customHolidays=normalizedCustomHolidays(existing);
       const v=validateMonth(data);
       state.pending=data;
       box.className='report';
@@ -2554,12 +2772,15 @@
       `;
       box.classList.remove('hidden');
       $('saveBtn').classList.remove('hidden');
+      renderHolidayEditor(data);
     }catch(e){
       state.pending=null;
       box.className='report bad';
       box.textContent=e.message;
       box.classList.remove('hidden');
       $('saveBtn').classList.add('hidden');
+      $('holidayEditor').classList.add('hidden');
+      $('holidayEditorDays').innerHTML='';
     }
   });
 
@@ -2592,8 +2813,9 @@
       const obj=JSON.parse(await file.text());
       if(obj.app!=='pecoyomi' || !obj.months) throw new Error('pecoyomiのバックアップではないみたい。');
       if(!confirm('現在の登録データを、選んだバックアップで置き換える？')) return;
-      state.months=obj.months;saveMonths();closeBackup();render();
-      alert('復元しました。');
+      state.months=obj.months;saveMonths();render();
+      closeBackup();
+      window.setTimeout(()=>showToast('復元完了しました'),170);
     }catch(err){ alert(err.message || '復元できませんでした。'); }
     e.target.value='';
   });
@@ -2623,6 +2845,13 @@
 
   function registeredMonthsForYear(year){
     return registeredMonthEntries().filter(item=>item.year===year);
+  }
+
+  function currentOrClosestRegisteredEntry(){
+    const exact=registeredMonthEntries().find(
+      item=>item.year===state.viewYear && item.month===state.viewMonth
+    );
+    return exact || closestRegisteredEntry();
   }
 
   function closestRegisteredEntry(){
@@ -2657,7 +2886,7 @@
     wheel.scrollTo({top:index*JUMP_ROW_HEIGHT,behavior});
   }
 
-  function renderJumpMonthWheel(preferredMonth=null){
+  function renderJumpMonthWheel(preferredMonth=null, behavior='auto'){
     const wheel=$('monthJumpMonthWheel');
     const entries=registeredMonthsForYear(jumpYear);
     if(!entries.length){
@@ -2688,7 +2917,7 @@
       });
     });
 
-    requestAnimationFrame(()=>scrollWheelToValue(wheel,jumpMonth,'auto'));
+    requestAnimationFrame(()=>scrollWheelToValue(wheel,jumpMonth,behavior));
   }
 
   function renderJumpYearWheel(){
@@ -2704,7 +2933,7 @@
         jumpYear=Number(btn.dataset.value);
         setWheelSelected(wheel,jumpYear);
         scrollWheelToValue(wheel,jumpYear,'smooth');
-        renderJumpMonthWheel(previousMonth);
+        renderJumpMonthWheel(previousMonth,'smooth');
       });
     });
 
@@ -2722,7 +2951,7 @@
       const previousMonth=jumpMonth;
       jumpYear=value;
       setWheelSelected(wheel,jumpYear);
-      renderJumpMonthWheel(previousMonth);
+      renderJumpMonthWheel(previousMonth,'smooth');
     }else{
       if(value===jumpMonth) return;
       jumpMonth=value;
@@ -2757,7 +2986,7 @@
   }
 
   function openMonthJump(){
-    const initial=closestRegisteredEntry();
+    const initial=currentOrClosestRegisteredEntry();
     if(!initial) return;
 
     const dlg=$('monthJumpDialog');
