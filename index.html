@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.19 -->
+  <!-- pecoyomi v1.20 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -1602,15 +1602,34 @@
       backdrop-filter:blur(20px) saturate(120%);
     }
 
-    /* 色だけ変える。反射・輪郭・影・ぼかしは白と完全共通 */
+    /* v1.20 — 白を親材質にして、有色ボタンはTintだけ変更。
+       旧 .action.secondary / .action.danger の個別shadowを詳細度ごと上書きする。 */
+    .action.secondary{
+      --glass-tint:rgba(255,255,255,.16);
+      --glass-ink:rgba(81,81,111,.94);
+      background:var(--glass-face);
+      color:var(--glass-ink);
+      border-color:var(--glass-border);
+      box-shadow:var(--glass-shadow);
+      -webkit-backdrop-filter:blur(20px) saturate(120%);
+      backdrop-filter:blur(20px) saturate(120%);
+    }
+
     .controlbtn.primary,
     .action:not(.secondary):not(.danger){
       --glass-tint:rgba(111,224,252,.70);
       --glass-ink:#51516F;
     }
+
     .action.danger{
       --glass-tint:rgba(252,167,221,.68);
       --glass-ink:#8D285D;
+      background:var(--glass-face);
+      color:var(--glass-ink);
+      border-color:var(--glass-border);
+      box-shadow:var(--glass-shadow);
+      -webkit-backdrop-filter:blur(20px) saturate(120%);
+      backdrop-filter:blur(20px) saturate(120%);
     }
 
     /* 通常・押下・モーダル背後で材質を切り替えない。変化は既存の縮小のみ */
@@ -1622,6 +1641,10 @@
     .subbtn.is-pressed,
     .action:active,
     .action.is-pressed,
+    .action.secondary:active,
+    .action.secondary.is-pressed,
+    .action.danger:active,
+    .action.danger.is-pressed,
     body.reading-open .controlbtn.primary,
     body.edit-open .controlbtn.primary{
       background:var(--glass-face);
