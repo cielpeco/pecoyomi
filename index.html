@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.24 -->
+  <!-- pecoyomi v1.25 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -226,6 +226,83 @@
     body.edit-open #editMonth::before{
       background:rgba(81,81,111,.64);
     }
+    /* v1.25 — 月テーマの左右に、操作ではない「隣の月」の気配を置く。
+       画面全体を送る既存のswipe-regionの子なので、ドラッグ時も一緒に動く。 */
+    .theme-rail{
+      position:relative;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-width:0;
+      isolation:isolate;
+    }
+    .theme-rail > .theme{
+      width:calc(100% - 92px);
+      min-width:0;
+      padding-inline:9px;
+      position:relative;
+      z-index:1;
+    }
+    .month-neighbor{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      width:54px;
+      height:62px;
+      display:grid;
+      place-items:center;
+      pointer-events:none;
+      user-select:none;
+      -webkit-user-select:none;
+      z-index:0;
+    }
+    .month-neighbor-prev{left:-14px}
+    .month-neighbor-next{right:-14px}
+    .month-neighbor::before{
+      content:"";
+      position:absolute;
+      inset:2px -12px;
+      border-radius:50%;
+      background:radial-gradient(ellipse at center,
+        rgba(255,157,192,.56) 0%,
+        rgba(255,176,205,.32) 38%,
+        rgba(255,191,216,0) 78%);
+      filter:blur(8px);
+      transform:scale(1);
+      animation:neighborGlowBreath 5.8s ease-in-out infinite alternate;
+    }
+    .month-neighbor-next::before{
+      background:radial-gradient(ellipse at center,
+        rgba(255,209,133,.64) 0%,
+        rgba(255,221,165,.35) 38%,
+        rgba(255,227,176,0) 78%);
+      animation-delay:-2.9s;
+    }
+    .month-neighbor-number{
+      position:relative;
+      z-index:1;
+      width:2ch;
+      text-align:center;
+      color:rgba(255,255,255,.96);
+      font-size:16px;
+      font-weight:700;
+      line-height:1;
+      font-variant-numeric:tabular-nums;
+      white-space:nowrap;
+      text-shadow:0 1px 5px rgba(255,255,255,.20);
+    }
+    @keyframes neighborGlowBreath{
+      from{opacity:.56;transform:scale(.86)}
+      to{opacity:.88;transform:scale(1.12)}
+    }
+    @media (prefers-reduced-motion:reduce){
+      .month-neighbor::before{animation:none;opacity:.72;transform:none}
+    }
+    @media (max-width:355px){
+      .theme-rail > .theme{width:calc(100% - 78px);padding-inline:7px}
+      .month-neighbor{width:46px}
+    }
+
     .theme-main{min-width:0;width:100%;text-align:center}
     .eyebrow{font-size:11px;color:var(--sub);margin-bottom:3px}
     .theme-title{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
@@ -1821,12 +1898,20 @@
   <main class="app">
     <div class="month-number-bg" id="monthNumberBg">11</div>
     <section class="swipe-region" id="monthSwipeRegion" aria-label="月切り替え領域">
-      <button class="theme" id="themeButton" type="button">
-        <div class="theme-main">
-          <div class="eyebrow">MONTHLY THEME</div>
-          <div class="theme-title" id="themeTitle">マンスリー未登録</div>
+      <div class="theme-rail">
+        <div class="month-neighbor month-neighbor-prev" aria-hidden="true">
+          <span class="month-neighbor-number" id="prevMonthHint">11</span>
         </div>
-      </button>
+        <button class="theme" id="themeButton" type="button">
+          <div class="theme-main">
+            <div class="eyebrow">MONTHLY THEME</div>
+            <div class="theme-title" id="themeTitle">マンスリー未登録</div>
+          </div>
+        </button>
+        <div class="month-neighbor month-neighbor-next" aria-hidden="true">
+          <span class="month-neighbor-number" id="nextMonthHint">1</span>
+        </div>
+      </div>
 
       <section class="daily" aria-live="polite">
         <div class="daily-inner">
@@ -2213,6 +2298,8 @@
   function render(){
     $('monthTitle').textContent = `${monthNameEn(state.viewMonth)} ${state.viewYear}`;
     $('monthNumberBg').textContent = String(state.viewMonth);
+    $('prevMonthHint').textContent = String(state.viewMonth===1 ? 12 : state.viewMonth-1);
+    $('nextMonthHint').textContent = String(state.viewMonth===12 ? 1 : state.viewMonth+1);
     const data = currentMonthData();
     const max = daysInMonth(state.viewYear,state.viewMonth);
     if (state.selectedDay > max) state.selectedDay = max;
