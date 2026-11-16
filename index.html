@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.13 -->
+  <!-- pecoyomi v1.14 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -435,9 +435,9 @@
       left:50%;
       bottom:0;
       width:min(100vw, 520px);
-      height:320px;
+      height:430px;
       margin:0;
-      padding:18px 0 calc(72px + env(safe-area-inset-bottom));
+      padding:16px 0 calc(72px + env(safe-area-inset-bottom));
       border:0;
       border-top:1px solid rgba(255,255,255,.58);
       border-radius:24px 24px 0 0;
@@ -453,6 +453,15 @@
         transform 180ms cubic-bezier(.22,.74,.28,1),
         opacity 150ms ease-out;
     }
+
+    .month-jump-hint{
+      min-height:48px;
+      padding:0 16px 8px;
+      font-size:12px;
+      line-height:1.6;
+      color:var(--sub);
+      text-align:left;
+    }
     #monthJumpDialog.is-visible .month-jump-sheet{
       opacity:1;
       transform:translate3d(-50%,0,0);
@@ -467,6 +476,7 @@
       width:100%;
       height:210px;
       padding:0;
+      margin-top:0;
       overflow:hidden;
       isolation:isolate;
     }
@@ -1759,6 +1769,10 @@
 
   <dialog id="monthJumpDialog">
     <div class="month-jump-sheet" role="document" aria-label="年月ジャンプ">
+      <div class="month-jump-hint">
+        選択した月へジャンプ！<br>
+        枠外タップで閉じるよ
+      </div>
       <div class="month-jump-reel">
         <div class="month-jump-selection" aria-hidden="true"></div>
         <div class="month-jump-wheel year-wheel" id="monthJumpYearWheel" aria-label="年"></div>
