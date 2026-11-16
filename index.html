@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.27 -->
+  <!-- pecoyomi v1.28 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -2444,7 +2444,17 @@
 
   // 月テーマの段階入場は、このページ起動中「その月を最初に開いた1回だけ」。
   // 月を跨げば再生し、いったん見た月へ戻った場合は再生しない。
-  const readingEntrancePlayedMonths = new Set();
+  // v1.28 — 項目ごとの再生完了を月別に記録。途中で閉じたら未完了分のみ再生。
+  const readingEntranceProgress = new Map();
+  let activeReadingEntranceKey = null;
+  function readingProgressFor(key){
+    if(!readingEntranceProgress.has(key)) readingEntranceProgress.set(key,new Set());
+    return readingEntranceProgress.get(key);
+  }
+  function readingEntranceItems(dlg){
+    return [dlg.querySelector('.reading-head-copy'),
+      ...dlg.querySelectorAll('#readingBody > .section, #readingBody > .empty')].filter(Boolean);
+  }
   let readingEntranceObserver = null;
   let readingEntranceRevealTimers = [];
   let lastReadingMonthKey = null;
@@ -2497,14 +2507,15 @@
     const bodyItems=[...dlg.querySelectorAll('#readingBody > .section, #readingBody > .empty')];
 
     const allItems=[head,...bodyItems].filter(Boolean);
-    allItems.forEach(el=>{
-      el.classList.add('entrance-pending');
+    const completed=readingProgressFor(activeReadingEntranceKey);
+    allItems.forEach((el,i)=>{
+      el.classList.toggle('entrance-pending',!completed.has(i));
       el.classList.remove('entrance-visible');
       delete el.dataset.entranceScheduled;
     });
 
-    // ヘッダーは最初に。画面内にある本文項目は少しずつずらして入れる。
-    scheduleReadingReveal(head,70,dlg);
+    // 完了済み項目は静止表示。未完了の項目だけ再生する。
+    if(!completed.has(0)) scheduleReadingReveal(head,70,dlg);
 
     const rootRect=body.getBoundingClientRect();
     const triggerBottom=rootRect.top + rootRect.height * .84;
@@ -2519,7 +2530,7 @@
         rect.top<rootRect.bottom &&
         rect.top<=triggerBottom;
 
-      if(initiallyReady){
+      if(initiallyReady && !completed.has(allItems.indexOf(el))){
         scheduleReadingReveal(el,140 + visibleOrder * 70,dlg);
         visibleOrder++;
       }
@@ -2531,7 +2542,7 @@
         entries.forEach(entry=>{
           if(!entry.isIntersecting) return;
           const el=entry.target;
-          if(el.dataset.entranceScheduled!=='1'){
+          if(el.classList.contains('entrance-pending') && el.dataset.entranceScheduled!=='1'){
             scheduleReadingReveal(el,300,dlg);
           }
           readingEntranceObserver?.unobserve(el);
@@ -2543,7 +2554,7 @@
       });
 
       bodyItems.forEach(el=>{
-        if(el.dataset.entranceScheduled!=='1'){
+        if(el.classList.contains('entrance-pending') && el.dataset.entranceScheduled!=='1'){
           readingEntranceObserver.observe(el);
         }
       });
@@ -2558,11 +2569,20 @@
   }
 
   $('readingDialog').addEventListener('animationend',(e)=>{
-    if(e.animationName!=='readingTitleSoftReveal') return;
-    const target=e.target;
-    if(target?.classList?.contains('section-title-text')){
-      target.classList.add('reveal-complete');
+    if(e.animationName==='readingTitleSoftReveal' &&
+       e.target?.classList?.contains('section-title-text')){
+      e.target.classList.add('reveal-complete');
     }
+    if(e.animationName!=='readingItemEntrance' || !activeReadingEntranceKey) return;
+    const dlg=$('readingDialog');
+    const items=readingEntranceItems(dlg);
+    const el=e.target;
+    const item=el.closest('.section') || el.closest('.empty') || el.closest('.reading-head-copy');
+    if(!item) return;
+    // sectionは本文のフェード終了を再生完了とする。見出し単体では確定しない。
+    if(item.classList.contains('section') && !el.classList.contains('prose')) return;
+    const index=items.indexOf(item);
+    if(index>=0) readingProgressFor(activeReadingEntranceKey).add(index);
   });
 
   function openReading(){
@@ -2618,23 +2638,24 @@
 
     clearReadingEntrance(dlg);
 
-    const isFirstEntrance=!readingEntrancePlayedMonths.has(entranceMonthKey);
+    activeReadingEntranceKey=entranceMonthKey;
+    const completed=readingProgressFor(entranceMonthKey);
+    const itemCount=readingEntranceItems(dlg).length;
+    const isFirstEntrance=completed.size<itemCount;
 
     // その月の初回表示は、前回どこまで読んでいても必ず一番上から。
     // showModal前と表示直後の両方で0を入れて、iOS側のスクロール位置復元も抑える。
-    if(isFirstEntrance || lastReadingMonthKey!==entranceMonthKey){
+    if(lastReadingMonthKey!==entranceMonthKey){
       body.scrollTop=0;
     }
     lastReadingMonthKey=entranceMonthKey;
 
     dlg.classList.toggle('first-entrance',isFirstEntrance);
     if(isFirstEntrance){
-      readingEntrancePlayedMonths.add(entranceMonthKey);
-
-      // 表示前に隠しておき、全体フェード開始後に画面内判定を行う。
-      const head=dlg.querySelector('.reading-head-copy');
-      const bodyItems=[...dlg.querySelectorAll('#readingBody > .section, #readingBody > .empty')];
-      [head,...bodyItems].filter(Boolean).forEach(el=>el.classList.add('entrance-pending'));
+      // 完了済み項目は最初から表示し、未完了項目のみ待機。
+      readingEntranceItems(dlg).forEach((el,i)=>{
+        el.classList.toggle('entrance-pending',!completed.has(i));
+      });
     }
 
     document.body.classList.add('reading-open');
@@ -2642,12 +2663,8 @@
 
     if(isFirstEntrance || lastReadingMonthKey===entranceMonthKey){
       requestAnimationFrame(()=>{
-        if(isFirstEntrance){
-          body.scrollTop=0;
-        }
         requestAnimationFrame(()=>{
           if(isFirstEntrance){
-            body.scrollTop=0;
             startReadingEntrance(dlg);
           }
         });
