@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.12 -->
+  <!-- pecoyomi v1.13 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -407,7 +407,7 @@
     .calendar-month:focus,
     .calendar-month:focus-visible{outline:none}
 
-    /* v1.12 — 年月ジャンプ。登録済みの年月だけをiOS風リールで選ぶ */
+    /* v1.13 — 年/月を1:1で操作。月側にテーマを含めるフル幅ハーフモーダル */
     #monthJumpDialog{
       width:100vw;
       height:100dvh;
@@ -420,104 +420,75 @@
       overflow:hidden;
       color:var(--ink);
     }
+    /* 月テーマ詳細と同じ「グレーアウトしない、ぼかし主体」の背景処理 */
     #monthJumpDialog::backdrop{
-      background:rgba(28,24,28,.18);
-      -webkit-backdrop-filter:blur(2px);
-      backdrop-filter:blur(2px);
+      background:rgba(247,244,239,.18);
+      -webkit-backdrop-filter:blur(16px) saturate(112%);
+      backdrop-filter:blur(16px) saturate(112%);
       opacity:0;
-      transition:opacity 140ms ease-out;
+      transition:opacity 120ms ease-out;
     }
     #monthJumpDialog.is-visible::backdrop{opacity:1}
+
     .month-jump-sheet{
       position:absolute;
-      left:12px;
-      right:12px;
-      bottom:max(12px, env(safe-area-inset-bottom));
-      max-width:520px;
-      margin:0 auto;
-      padding:10px 12px 14px;
-      border:1px solid rgba(255,255,255,.58);
-      border-radius:24px;
-      background:rgba(255,255,255,.64);
+      left:50%;
+      bottom:0;
+      width:min(100vw, 520px);
+      height:320px;
+      margin:0;
+      padding:18px 0 calc(72px + env(safe-area-inset-bottom));
+      border:0;
+      border-top:1px solid rgba(255,255,255,.58);
+      border-radius:24px 24px 0 0;
+      background:rgba(255,255,255,.62);
       -webkit-backdrop-filter:blur(24px) saturate(112%);
       backdrop-filter:blur(24px) saturate(112%);
       box-shadow:
-        0 18px 50px rgba(52,46,44,.14),
+        0 -12px 34px rgba(52,46,44,.075),
         inset 0 1px 0 rgba(255,255,255,.92);
       opacity:0;
-      transform:translate3d(0,18px,0);
+      transform:translate3d(-50%,18px,0);
       transition:
         transform 180ms cubic-bezier(.22,.74,.28,1),
         opacity 150ms ease-out;
     }
     #monthJumpDialog.is-visible .month-jump-sheet{
       opacity:1;
-      transform:translate3d(0,0,0);
+      transform:translate3d(-50%,0,0);
     }
-    .month-jump-actions{
-      height:38px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 2px;
-    }
-    .month-jump-icon{
-      -webkit-appearance:none;
-      appearance:none;
-      width:34px;
-      height:34px;
-      border:0;
-      border-radius:50%;
-      padding:0;
-      background:rgba(255,255,255,.34);
-      color:rgba(81,81,111,.78);
-      font-size:20px;
-      line-height:1;
-      font-weight:400;
-      display:grid;
-      place-items:center;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.80),
-        0 2px 8px rgba(70,60,50,.045);
-      -webkit-tap-highlight-color:transparent;
-    }
-    .month-jump-apply{
-      background:rgba(111,224,252,.58);
-      color:rgba(81,81,111,.92);
-      font-size:18px;
-      font-weight:700;
-    }
-    .month-jump-icon:focus,
-    .month-jump-icon:focus-visible{outline:none}
+
     .month-jump-reel{
       --jump-row:42px;
       position:relative;
       display:grid;
-      grid-template-columns:58px 54px minmax(0,1fr);
-      gap:8px;
+      grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+      gap:0;
+      width:100%;
       height:210px;
-      padding:0 8px;
+      padding:0;
       overflow:hidden;
       isolation:isolate;
     }
     .month-jump-selection{
       position:absolute;
-      left:6px;
-      right:6px;
+      left:0;
+      right:0;
       top:50%;
       height:var(--jump-row);
       transform:translateY(-50%);
-      border-radius:12px;
-      background:rgba(81,81,111,.070);
+      border-radius:0;
+      background:rgba(81,81,111,.060);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.62),
-        inset 0 -1px 0 rgba(81,81,111,.035);
+        inset 0 1px 0 rgba(255,255,255,.58),
+        inset 0 -1px 0 rgba(81,81,111,.030);
       pointer-events:none;
       z-index:0;
     }
     .month-jump-wheel{
       position:relative;
       z-index:1;
+      width:100%;
       height:210px;
       overflow-y:auto;
       overscroll-behavior:contain;
@@ -575,23 +546,40 @@
     }
     .month-jump-option:focus,
     .month-jump-option:focus-visible{outline:none}
-    .month-jump-theme{
-      position:relative;
-      z-index:1;
-      align-self:center;
-      min-width:0;
-      height:var(--jump-row);
-      display:flex;
-      align-items:center;
+
+    /* 右半分は「月 + その月のテーマ」を1つの操作行として扱う */
+    .month-wheel .month-jump-option{
       justify-content:flex-start;
-      overflow:hidden;
+      padding:0 5px 0 10px;
+      font-size:12px;
+      letter-spacing:-.035em;
       white-space:nowrap;
-      color:var(--ink);
-      font-size:14px;
-      line-height:1;
-      font-weight:600;
-      letter-spacing:-.015em;
-      padding-left:2px;
+      overflow:hidden;
+    }
+    .month-jump-month-label{
+      flex:0 0 auto;
+      margin-right:5px;
+      font-variant-numeric:tabular-nums;
+    }
+    .month-jump-month-theme{
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:clip;
+    }
+
+    /* TODAYと同じ位置・形に重ねる決定ボタン。座標はJSで実測同期 */
+    .month-jump-action{
+      position:fixed;
+      z-index:4;
+      margin:0;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity 120ms ease-out;
+    }
+    #monthJumpDialog.is-visible .month-jump-action{
+      opacity:1;
+      pointer-events:auto;
     }
     .weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
     .weekdays div{
@@ -1771,17 +1759,13 @@
 
   <dialog id="monthJumpDialog">
     <div class="month-jump-sheet" role="document" aria-label="年月ジャンプ">
-      <div class="month-jump-actions">
-        <button class="month-jump-icon" id="monthJumpCancel" type="button" aria-label="閉じる">×</button>
-        <button class="month-jump-icon month-jump-apply" id="monthJumpApply" type="button" aria-label="この年月へ移動">✓</button>
-      </div>
       <div class="month-jump-reel">
         <div class="month-jump-selection" aria-hidden="true"></div>
         <div class="month-jump-wheel year-wheel" id="monthJumpYearWheel" aria-label="年"></div>
-        <div class="month-jump-wheel month-wheel" id="monthJumpMonthWheel" aria-label="月"></div>
-        <div class="month-jump-theme" id="monthJumpTheme" aria-live="polite"></div>
+        <div class="month-jump-wheel month-wheel" id="monthJumpMonthWheel" aria-label="月と月テーマ"></div>
       </div>
     </div>
+    <button class="controlbtn primary month-jump-action" id="monthJumpApply" type="button">ジャンプ</button>
   </dialog>
 
 <script>
@@ -2645,25 +2629,12 @@
     wheel.scrollTo({top:index*JUMP_ROW_HEIGHT,behavior});
   }
 
-  function updateJumpTheme(){
-    const preview=$('monthJumpTheme');
-    const data=state.months[keyOf(jumpYear,jumpMonth)];
-    const lenormand=data?.theme?.lenormand || '';
-    const loa=data?.theme?.loa || '';
-    preview.innerHTML=(lenormand || loa) ? renderThemeNameCompact(lenormand,loa) : '';
-    preview.setAttribute(
-      'aria-label',
-      [lenormand,loa].filter(Boolean).join(' × ')
-    );
-  }
-
   function renderJumpMonthWheel(preferredMonth=null){
     const wheel=$('monthJumpMonthWheel');
     const entries=registeredMonthsForYear(jumpYear);
     if(!entries.length){
       wheel.innerHTML='';
       jumpMonth=null;
-      updateJumpTheme();
       return;
     }
 
@@ -2673,21 +2644,23 @@
     );
     jumpMonth=selected.month;
 
-    wheel.innerHTML=entries.map(item=>
-      `<button class="month-jump-option${item.month===jumpMonth ? ' is-selected' : ''}" type="button" data-value="${item.month}">${item.month}月</button>`
-    ).join('');
+    wheel.innerHTML=entries.map(item=>{
+      const lenormand=item.data?.theme?.lenormand || '';
+      const loa=item.data?.theme?.loa || '';
+      const theme=(lenormand || loa) ? renderThemeNameCompact(lenormand,loa) : '';
+      const ariaTheme=[lenormand,loa].filter(Boolean).join(' × ');
+      return `<button class="month-jump-option${item.month===jumpMonth ? ' is-selected' : ''}" type="button" data-value="${item.month}" aria-label="${item.month}月${ariaTheme ? ` ${escapeHtml(ariaTheme)}` : ''}"><span class="month-jump-month-label">${item.month}月</span><span class="month-jump-month-theme">${theme}</span></button>`;
+    }).join('');
 
     wheel.querySelectorAll('.month-jump-option').forEach(btn=>{
       btn.addEventListener('click',()=>{
         jumpMonth=Number(btn.dataset.value);
         setWheelSelected(wheel,jumpMonth);
         scrollWheelToValue(wheel,jumpMonth,'smooth');
-        updateJumpTheme();
       });
     });
 
     requestAnimationFrame(()=>scrollWheelToValue(wheel,jumpMonth,'auto'));
-    updateJumpTheme();
   }
 
   function renderJumpYearWheel(){
@@ -2726,7 +2699,6 @@
       if(value===jumpMonth) return;
       jumpMonth=value;
       setWheelSelected(wheel,jumpMonth);
-      updateJumpTheme();
     }
   }
 
@@ -2745,6 +2717,17 @@
     },{passive:true});
   }
 
+  function syncMonthJumpActionPosition(){
+    const source=$('todayBtn');
+    const action=$('monthJumpApply');
+    if(!source || !action) return;
+    const rect=source.getBoundingClientRect();
+    action.style.left=`${rect.left}px`;
+    action.style.top=`${rect.top}px`;
+    action.style.width=`${rect.width}px`;
+    action.style.height=`${rect.height}px`;
+  }
+
   function openMonthJump(){
     const initial=closestRegisteredEntry();
     if(!initial) return;
@@ -2753,7 +2736,9 @@
     jumpMonth=initial.month;
     renderJumpYearWheel();
     renderJumpMonthWheel(jumpMonth);
+    syncMonthJumpActionPosition();
     fadeInDialog($('monthJumpDialog'));
+    requestAnimationFrame(syncMonthJumpActionPosition);
   }
 
   function closeMonthJump(){
@@ -2953,7 +2938,6 @@
   $('todayBtn').addEventListener('click',goToday);
   $('themeButton').addEventListener('click',openReading);
   $('monthTitle').addEventListener('click',openMonthJump);
-  $('monthJumpCancel').addEventListener('click',closeMonthJump);
   $('monthJumpApply').addEventListener('click',applyMonthJump);
   $('monthJumpDialog').addEventListener('click',(e)=>{
     if(e.target===$('monthJumpDialog')) closeMonthJump();
@@ -2961,6 +2945,9 @@
   $('monthJumpDialog').addEventListener('cancel',(e)=>{
     e.preventDefault();
     closeMonthJump();
+  });
+  window.addEventListener('resize',()=>{
+    if($('monthJumpDialog').open) syncMonthJumpActionPosition();
   });
   let suppressEditMonthClick = false;
 
