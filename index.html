@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.14 -->
+  <!-- pecoyomi v1.15 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -459,8 +459,19 @@
       padding:0 16px 8px;
       font-size:12px;
       line-height:1.6;
+      color:rgba(28,28,30,.18);
+      text-align:center;
+      opacity:.42;
+      transition:
+        color 90ms ease-out,
+        opacity 90ms ease-out;
+    }
+    #monthJumpDialog.is-visible .month-jump-hint{
       color:var(--sub);
-      text-align:left;
+      opacity:1;
+      transition:
+        color 150ms ease-out 38ms,
+        opacity 150ms ease-out 38ms;
     }
     #monthJumpDialog.is-visible .month-jump-sheet{
       opacity:1;
@@ -507,6 +518,8 @@
       scrollbar-width:none;
       padding:84px 0;
       touch-action:pan-y;
+      opacity:.34;
+      transition:opacity 90ms ease-out;
       -webkit-mask-image:linear-gradient(
         to bottom,
         transparent 0,
@@ -527,6 +540,10 @@
       );
     }
     .month-jump-wheel::-webkit-scrollbar{display:none}
+    #monthJumpDialog.is-visible .month-jump-wheel{
+      opacity:1;
+      transition:opacity 155ms ease-out 42ms;
+    }
     .month-jump-option{
       -webkit-appearance:none;
       appearance:none;
@@ -538,7 +555,7 @@
       border:0;
       padding:0;
       background:transparent;
-      color:var(--sub);
+      color:rgba(28,28,30,.16);
       font-size:15px;
       line-height:1;
       font-weight:400;
@@ -550,9 +567,15 @@
       -webkit-tap-highlight-color:transparent;
     }
     .month-jump-option.is-selected{
-      color:var(--ink);
+      color:rgba(28,28,30,.24);
       opacity:1;
       font-weight:600;
+    }
+    #monthJumpDialog.is-visible .month-jump-option{
+      color:var(--sub);
+    }
+    #monthJumpDialog.is-visible .month-jump-option.is-selected{
+      color:var(--ink);
     }
     .month-jump-option:focus,
     .month-jump-option:focus-visible{outline:none}
