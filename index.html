@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="pecoyomi" />
   <title>pecoyomi</title>
-  <!-- pecoyomi v1.25 -->
+  <!-- pecoyomi v1.26 -->
   <style>
     :root{
       --bg:#FFFAFC;
@@ -226,7 +226,7 @@
     body.edit-open #editMonth::before{
       background:rgba(81,81,111,.64);
     }
-    /* v1.25 — 月テーマの左右に、操作ではない「隣の月」の気配を置く。
+    /* v1.26 — 月テーマの左右に、操作ではない「隣の月」の気配を置く。
        画面全体を送る既存のswipe-regionの子なので、ドラッグ時も一緒に動く。 */
     .theme-rail{
       position:relative;
@@ -237,7 +237,7 @@
       isolation:isolate;
     }
     .theme-rail > .theme{
-      width:calc(100% - 92px);
+      width:calc(100% - 64px);
       min-width:0;
       padding-inline:9px;
       position:relative;
@@ -261,13 +261,13 @@
     .month-neighbor::before{
       content:"";
       position:absolute;
-      inset:2px -12px;
+      inset:-12px -24px;
       border-radius:50%;
       background:radial-gradient(ellipse at center,
         rgba(255,157,192,.56) 0%,
         rgba(255,176,205,.32) 38%,
         rgba(255,191,216,0) 78%);
-      filter:blur(8px);
+      filter:blur(11px);
       transform:scale(1);
       animation:neighborGlowBreath 5.8s ease-in-out infinite alternate;
     }
@@ -299,7 +299,7 @@
       .month-neighbor::before{animation:none;opacity:.72;transform:none}
     }
     @media (max-width:355px){
-      .theme-rail > .theme{width:calc(100% - 78px);padding-inline:7px}
+      .theme-rail > .theme{width:calc(100% - 58px);padding-inline:7px}
       .month-neighbor{width:46px}
     }
 
